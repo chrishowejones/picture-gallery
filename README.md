@@ -17,6 +17,13 @@ You will need [Leiningen][1] 1.7.0 or above installed. Also need to install [Pos
 [1]: https://github.com/technomancy/leiningen
 [2]: http://www.postgresql.org/
 
+You need to start the postgres database and create a schema called gallery with a user of admin and password of admin. Then open a REPL (e.g. lein repl) and type:
+
+    user> (use 'picture-gallery.models.schema)
+    user> (create-users-table)
+
+These commands will create the necessary tables in the postgresql database. Once you have done this you can run the application.
+
 ## Running
 
 To start a web server for the application, run:
