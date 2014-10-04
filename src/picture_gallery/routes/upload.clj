@@ -2,7 +2,7 @@
   (:require [compojure.core :refer [defroutes GET POST]]
             [hiccup.form :refer :all]
             [hiccup.element :refer [image]]
-            [hiccup.util :refer [url-encode]]
+            [hiccup.util :refer [url-encode escape-html]]
             [picture-gallery.views.layout :as layout]
             [noir.io :refer [upload-file resource-path]]
             [noir.session :as session]
@@ -34,7 +34,7 @@
      (try
        (noir.io/upload-file (gallery-path) file :create-path? true)
        (image {:height "150px"}
-              (str "/img/" (url-encode filename)))
+              (str "/img/" (clojure.string/replace (url-encode filename) #"\+" "%20")))
        (catch Exception ex
          (str "error uploading file " (.getMessage ex)))))))
 
