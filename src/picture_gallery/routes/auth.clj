@@ -60,8 +60,22 @@
           (registration-page)))
     (registration-page id)))
 
+(defn handle-login [id pass]
+  (let [user (db/get-user id)]
+    (and user (crypt/compare pass (user :pass)))
+    (session/put! :user user))
+  (resp/redirect "/"))
+
+(defn handle-logout []
+  (session/clear!)
+  (resp/redirect "/"))
+
 (defroutes auth-routes
   (GET "/register" []
        (registration-page))
   (POST "/register" [id pass pass1]
-         (handle-registration id pass pass1)))
+        (handle-registration id pass pass1))
+  (POST "/login" [id pass]
+        (handle-login id pass))
+  (GET "/logout" []
+        (handle-logout)))
