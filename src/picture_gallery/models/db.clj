@@ -19,3 +19,5 @@
     sql/with-query-results res
     ["select * from users where id = ?" id]
     (first res)))
+
+;;(with-db sql/delete-rows)

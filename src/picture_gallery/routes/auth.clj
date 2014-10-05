@@ -12,10 +12,12 @@
   (:import java.io.File))
 
 (defn create-gallery-path []
-  (let [user-path (File. gallery-path)]
-    (if-not (.exists user-path)
-      (.mkdirs user-path))
-    (str (.getAbsolutePath user-path) File/separator)))
+  (do
+    (println (gallery-path))
+    (let [user-path (File. (gallery-path))]
+     (if-not (.exists user-path)
+       (.mkdir user-path))
+     (str (.getAbsolutePath user-path) File/separator))))
 
 (defn valid? [id pass pass1]
   (vali/rule (vali/has-value? id)
@@ -55,7 +57,7 @@
         (= 0 (.getErrorCode ex)))
    (str "The user with id " id " already exists!")
    :else
-   "An error has occurred while processing the request"))
+   (str  "An error has occurred while processing the request. Error is " (.getMessage ex))))
 
 (defn handle-registration [id pass pass1]
   (if (valid? id pass pass1)
@@ -87,4 +89,4 @@
   (POST "/login" [id pass]
         (handle-login id pass))
   (GET "/logout" []
-        (handle-logout)))
+       (handle-logout)))

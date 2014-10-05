@@ -10,7 +10,8 @@
             [noir.util.route :refer [restricted]]
             [clojure.java.io :as io]
             [ring.util.response :refer [file-response]]
-            [picture-gallery.models.db :as db])
+            [picture-gallery.models.db :as db]
+            [noir.util.route :refer [restricted]])
   (:import [java.io File FileInputStream FileOutputStream]
            [java.awt.image AffineTransformOp BufferedImage]
            java.awt.RenderingHints
@@ -49,15 +50,15 @@
      (File. (str path thumb-prefix filename)))))
 
 (defn upload-page [info]
-  (if (session/get :user)
+  (do
+   (println "upload-page called") 
    (layout/common
-    [:h2 "Upload an image"]
-    [:p info]
-    (form-to {:enctype "multipart/form-data"}
-             [:post "/upload"]
-             (file-upload :file)
-             (submit-button "upload")))
-   (resp/redirect "/")))
+     [:h2 "Upload an image"]
+     [:p info]
+     (form-to {:enctype "multipart/form-data"}
+              [:post "/upload"]
+              (file-upload :file)
+              (submit-button "upload")))))
 
 (defn handle-upload [{:keys [filename] :as file}]
   (upload-page
@@ -83,6 +84,6 @@
 
 
 (defroutes upload-routes
-  (GET "/upload" [info] (upload-page info))
-  (POST "/upload" [file] (handle-upload file))
+  (GET "/upload" [info] (restricted (upload-page info)))
+  (POST "/upload" [file] (restricted (handle-upload file)))
   (GET "/img/:user-id/:file-name" [user-id file-name] (serve-file user-id file-name)))
