@@ -11,21 +11,14 @@
             [clojure.java.io :as io]
             [ring.util.response :refer [file-response]]
             [picture-gallery.models.db :as db]
-            [noir.util.route :refer [restricted]])
+            [noir.util.route :refer [restricted]]
+            [picture-gallery.util :refer [gallery-path galleries thumb-prefix thumb-uri thumb-size]])
   (:import [java.io File FileInputStream FileOutputStream]
            [java.awt.image AffineTransformOp BufferedImage]
            java.awt.RenderingHints
            java.awt.geom.AffineTransform
            javax.imageio.ImageIO))
 
-(def galleries "galleries")
-
-(defn gallery-path []
-  (str galleries File/separator (session/get :user)))
-
-(def thumb-size 150)
-
-(def thumb-prefix "thumb_")
 
 (defn scale [img ratio width height]
   (let [scale (AffineTransform/getScaleInstance
@@ -69,11 +62,7 @@
        (db/add-image (session/get :user) filename)
        ;; display thumbnail
        (image {:height "150px"}
-              (str "/img/"
-                   (session/get :user)
-                   File/separator
-                   thumb-prefix
-                   (clojure.string/replace (url-encode filename) #"\+" "%20")))
+                      (thumb-uri (session/get :user) filename))
        (catch Exception ex
          (str "error uploading file " (.getMessage ex)))))))
 
