@@ -21,6 +21,7 @@ You need to start the postgres database and create a schema called gallery with 
 
     user> (use 'picture-gallery.models.schema)
     user> (create-users-table)
+    user> (create-images-table)
 
 These commands will create the necessary tables in the postgresql database. Once you have done this you can run the application.
 

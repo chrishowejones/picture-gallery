@@ -50,15 +50,13 @@
      (File. (str path thumb-prefix filename)))))
 
 (defn upload-page [info]
-  (do
-   (println "upload-page called") 
-   (layout/common
-     [:h2 "Upload an image"]
-     [:p info]
-     (form-to {:enctype "multipart/form-data"}
-              [:post "/upload"]
-              (file-upload :file)
-              (submit-button "upload")))))
+  (layout/common
+   [:h2 "Upload an image"]
+   [:p info]
+   (form-to {:enctype "multipart/form-data"}
+            [:post "/upload"]
+            (file-upload :file)
+            (submit-button "upload"))))
 
 (defn handle-upload [{:keys [filename] :as file}]
   (upload-page
@@ -66,8 +64,9 @@
      "please select a file to upload"
      (try
        ;; upload file and save thumbnail
-       (noir.io/upload-file (gallery-path) file :create-path? true)
+       (upload-file (gallery-path) file)
        (save-thumbnail file)
+       (db/add-image (session/get :user) filename)
        ;; display thumbnail
        (image {:height "150px"}
               (str "/img/"
