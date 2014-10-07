@@ -69,8 +69,6 @@
 (defn serve-file [user-id file-name]
   (file-response (str galleries File/separator user-id File/separator file-name)))
 
-
-
 (defroutes upload-routes
   (GET "/upload" [info] (restricted (upload-page info)))
   (POST "/upload" [file] (restricted (handle-upload file)))
