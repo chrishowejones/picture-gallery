@@ -28,11 +28,10 @@
     (image (thumb-uri userid name))
     userid "'s gallery"]])
 
-(comment
-  (defn show-galleries
-    "Display the galleries for a user."
-    []
-    (map gallery-link (db/get-gallery-previews))))
+(defn show-galleries
+  "Display the galleries for a user."
+  []
+  (map gallery-link (db/get-gallery-previews)))
 
 (defroutes gallery-routes
   "Define routes to gallery"
