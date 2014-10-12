@@ -55,4 +55,4 @@
   "Delete an image from the database."
   [userid name]
   (with-db
-    sql/delete-rows) :images ["userid = ? and name = ?" userid name])
+    sql/delete-rows :images ["userid = ? and name = ?" userid name]))

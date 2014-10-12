@@ -12,15 +12,19 @@
   "Display a thumbnail as a link to the larger image."
   [{:keys [userid name]}]
   [:div.thumbnail
-   [:a {:href (str "/gallery/" userid)}
+   [:a {:href (image-uri userid name)}
     (image (thumb-uri userid name))
     (if (= userid (session/get :user)) (check-box name))]])
 
 (defn display-gallery
   "Display gallery for a user."
   [userid]
-  (or
-   (not-empty (map thumbnail-link (db/images-by-user userid)))
+  (if-let [gallery (not-empty (map thumbnail-link (db/images-by-user userid)))]
+    [:div
+     [:div#error]
+     gallery
+     (if (= userid (session/get :user))
+       [:input#delete {:type "submit" :value "delete images"}])]  
    [:p "The user " userid " does not have any galleries"]))
 
 (defn gallery-link

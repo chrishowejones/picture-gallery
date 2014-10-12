@@ -1,3 +1,4 @@
+
 function deleteImages() {
     var selectedInputs = $("input:checked");
     var selectedIds = [];
@@ -5,24 +6,24 @@ function deleteImages() {
       .each(function() {
           selectedIds.push($(this).attr('id'));
       });
-    if (selectedIds.length < 1) alert("No images selected")
-    else
-        $.post("/delete",
-               {:names selectedIds},
+
+    if (selectedIds.length < 1) alert("No images selected");
+    else 
+        $.post("/delete", {names: selectedIds},
                function(response) {
                    var errors = $('<ul>');
                    $.each(response, function() {
                        if ("ok" == this.status) {
-                           var element = this.getElementById(this.name);
-                           $element.parent.parent.remove();
+                           var element = document.getElementById(this.name);
+                           $(element).parent().parent().remove();
                        }
                        else
                            errors
-                             .append($('<li>'),
+                             .append($('<li>',
                                      {html: "failed to remove " +
                                       this.name +
                                       ": " +
-                                      this.status});
+                                      this.status}));
                        });
                    if (errors.length > 0) 
                        $('#error').empty().append(errors);
@@ -30,7 +31,7 @@ function deleteImages() {
                    },
               "json");
 }
-                   
 
-      
-    
+$(document).ready(function() {
+    $("#delete").click(deleteImages);
+});
