@@ -50,3 +50,9 @@
              as row_number from images)
              as rows where row_number = 1"]
     (doall res)))
+
+(defn delete-image
+  "Delete an image from the database."
+  [userid name]
+  (with-db
+    sql/delete-rows) :images ["userid = ? and name = ?" userid name])

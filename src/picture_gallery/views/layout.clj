@@ -1,24 +1,33 @@
 (ns picture-gallery.views.layout
-  (:require [hiccup.page :refer [html5 include-css]]
+  (:require [hiccup.page :refer [html5 include-css include-js]]
             [hiccup.element :refer [link-to]]
             [noir.session :as session]
             [hiccup.form :refer :all]))
 
+(defn make-menu
+  "Make menu."
+  [& items]
+  [:div (for [item items]
+          [:div.menuitem item])])
+
 (defn guest-menu
   "Display guest menu."
   []
-  [:div (link-to "/register" "register")
+  (make-menu
+   (link-to "/home" "home")
+   (link-to "/register" "register")
    (form-to [:post "/login"]
             (text-field {:placeholder "screen name"} "id")
             (password-field {:placeholder "password"} "pass")
-            (submit-button "login"))])
+            (submit-button "login"))))
 
 (defn user-menu
   "Display user menu."
   [user]
-  (list
-   [:div (link-to "/upload" "upload images")]
-   [:div (link-to "/logout" (str "logout " user))]))
+  (make-menu
+   (link-to "/home" "home")
+   (link-to "/upload" "upload images")
+   (link-to "/logout" (str "logout " user))))
 
 (defn base
   "Create base page and include content."
@@ -26,7 +35,8 @@
   (html5
     [:head
      [:title "Welcome to picture-gallery"]
-     (include-css "/css/screen.css")]
+     (include-css "/css/screen.css")
+     (include-js "//code.jquery.com/jquery-2.0.2.min.js")]
     [:body content]))
 
 (defn common
@@ -36,7 +46,7 @@
    (if-let [user (session/get :user)]
      (user-menu user)
      (guest-menu))
-   content))
+   [:div.content content]))
 
 
 
