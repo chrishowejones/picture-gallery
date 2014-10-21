@@ -56,3 +56,9 @@
   [userid name]
   (with-db
     sql/delete-rows :images ["userid = ? and name = ?" userid name]))
+
+(defn delete-user
+  "Delete user from the database."
+  [userid]
+  (with-db
+    sql/delete-rows :users ["id=?" userid]))
