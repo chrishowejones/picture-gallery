@@ -22,7 +22,7 @@
        [:script {:type "text/javascript"}
         (str "var context=\"" (:context request) "\";")]
        (include-js "//code.jquery.com/jquery-2.0.2.min.js"
-                   "/js/colors.js"
+                   "/js/albumcolors.js"
                    "/js/site.js")]
       [:body content]))))
 

@@ -18,4 +18,3 @@
 (defn thumb-uri [userid file-name]
   (image-uri userid (str thumb-prefix file-name)))
 
-

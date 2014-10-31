@@ -12,7 +12,8 @@
             [ring.util.response :refer [file-response]]
             [picture-gallery.models.db :as db]
             [noir.util.route :refer [restricted]]
-            [picture-gallery.util :refer [gallery-path galleries thumb-prefix thumb-uri thumb-size]])
+            [picture-gallery.util :refer [gallery-path galleries thumb-prefix thumb-uri thumb-size]]
+            [taoensso.timbre :refer [trace debug info warn error fatal]])
   (:import [java.io File FileInputStream FileOutputStream]
            [java.awt.image AffineTransformOp BufferedImage]
            java.awt.RenderingHints
@@ -28,6 +29,7 @@
     (io/delete-file (str (gallery-path) File/separator thumb-prefix name))
     "ok"
     (catch Exception ex
+      (error ex "an error has occurred while deleting " name)
       (.getMessage ex))))
 
 (defn delete-images
