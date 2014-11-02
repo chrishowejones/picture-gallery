@@ -10,18 +10,21 @@
             [picture-gallery.models.db :as db]
             [picture-gallery.util :refer [gallery-path]]
             [noir.util.route :refer [restricted]]
-            [picture-gallery.routes.upload :refer [delete-image]])
+            [picture-gallery.routes.upload :refer [delete-image]]
+            [taoensso.timbre :as timbre])
   (:import java.io.File))
 
-(defn create-gallery-path []
-  (do
-    (println (gallery-path))
-    (let [user-path (File. (gallery-path))]
-     (if-not (.exists user-path)
-       (.mkdir user-path))
-     (str (.getAbsolutePath user-path) File/separator))))
+(defn create-gallery-path
+  "Create path to gallery directory for user. Create directory if it's not present."
+  []
+  (let [user-path (File. (gallery-path))]
+    (if-not (.exists user-path)
+      (.mkdir user-path))
+    (str (.getAbsolutePath user-path) File/separator)))
 
-(defn valid? [id pass pass1]
+(defn valid?
+  "Check if user and password are valid. Store error messages if not returns true if valid."
+  [id pass pass1]
   (vali/rule (vali/has-value? id)
              [:id "user id is required"])
   (vali/rule (vali/min-length? pass 5)
@@ -30,16 +33,22 @@
              [:pass "entered passwords do not match"])
   (not (vali/errors? :id :pass :pass1)))
 
-(defn error-item [[error]]
+(defn error-item
+  "Render error item."
+  [[error]]
   [:div.error error])
 
-(defn control [id label field]
+(defn control
+  "Render a page control from the id, label and field."
+  [id label field]
   (list
    (vali/on-error id error-item)
    label field
    [:br]))
 
-(defn registration-page [& [id]]
+(defn registration-page
+  "Render registration page."
+  [& [id]]
   (layout/base
    (form-to [:post "/register"]
             (control :id
@@ -53,7 +62,9 @@
                      (password-field {:tabindex 3} "pass1"))
             (submit-button {:tabindex 4} "create account"))))
 
-(defn format-error [id ex]
+(defn format-error
+  "Format error messages on page."
+  [id ex]
   (cond
    (and (instance? org.postgresql.util.PSQLException ex)
         (= 0 (.getErrorCode ex)))
@@ -61,29 +72,42 @@
    :else
    (str  "An error has occurred while processing the request. Error is " (.getMessage ex))))
 
-(defn handle-registration [id pass pass1]
+(defn handle-registration
+  "Register user."
+  [id pass pass1]
   (if (valid? id pass pass1)
-    (try
-      (db/create-user {:id id :pass (crypt/encrypt pass)})
-      (session/put! :user id)
-      (create-gallery-path)
-      (resp/redirect "/")
-      (catch Exception ex
-        (vali/rule false [:id (format-error id ex)])
-        (registration-page)))
+    (do
+     (info (str "Registering " id)) 
+     (try
+        (db/create-user {:id id :pass (crypt/encrypt pass)})
+        (session/put! :user id)
+        (create-gallery-path)
+        (resp/redirect "/")
+        (catch Exception ex
+          (vali/rule false [:id (format-error id ex)])
+          (registration-page))))
     (registration-page id)))
 
-(defn handle-login [id pass]
+(defn handle-login
+  "Login user."
+  [id pass]
   (let [user (db/get-user id)]
     (and user (crypt/compare pass (user :pass))
-         (session/put! :user id)))
+         (do
+           (timbre/info (str "Logged on as " id)) 
+           (session/put! :user id))))
   (resp/redirect "/"))
 
-(defn handle-logout []
+(defn handle-logout
+  "Logout user."
+  []
+  (timbre/infof "Logout %s" (session/get :user) )
   (session/clear!)
   (resp/redirect "/"))
 
-(defn delete-account-page []
+(defn delete-account-page
+  "Render delete account page."
+  []
   (layout/common
    (form-to [:post "/confirm-delete"]
             (submit-button "delete account"))

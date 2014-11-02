@@ -1,11 +1,14 @@
 (ns picture-gallery.util
   (:require [noir.session :as session]
-            [hiccup.util :refer [url-encode]])
+            [hiccup.util :refer [url-encode]]
+            [environ.core :refer [env]])
   (:import java.io.File))
 
-(def galleries "galleries")
+(def galleries (env :galleries-path))
 
-(defn gallery-path []
+(defn gallery-path
+  "Construct path to gallery for the currently logged in user."
+  []
   (str galleries File/separator (session/get :user)))
 
 (def thumb-size 150)

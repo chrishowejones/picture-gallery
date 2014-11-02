@@ -13,19 +13,24 @@
 (defn user-page [_]
   (session/get :user))
 
-(defn info-appender [{:keys [level message]}]
-  (println "level: " level " message: " message))
-
 (defn init []
   (timbre/set-config! [:timestamp-pattern] "yyyy-MM-dd HH:mm:ss")
+  (timbre/set-config! [:appenders :error]
+                      {:min-level :error
+                       :enabled? true
+                       :async? false
+                       :max-message-per-msecs nil
+                       :fn rotor/append})
   (timbre/set-config! [:appenders :rotor]
                       {:min-level :info
                        :enabled? true
                        :async? false
                        :max-message-per-msecs nil
-                       :fn rotor/append})
-  (timbre/set-config! [:shared-appender-config :rotor]
+                       :fn rotor/append})  
+  (timbre/set-config! [:shared-appender-config :error]
                       {:path "error.log" :max-size (* 512 1024) :backlog 10})
+  (timbre/set-config! [:shared-appender-config :rotor]
+                      {:path "picture-gallery.log" :max-size (* 512 1024) :backlog 10})
   (timbre/info "picture-gallery is starting"))
 
 (defn destroy []
