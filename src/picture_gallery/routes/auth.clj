@@ -77,7 +77,7 @@
   [id pass pass1]
   (if (valid? id pass pass1)
     (do
-     (info (str "Registering " id)) 
+     (timbre/info (str "Registering " id)) 
      (try
         (db/create-user {:id id :pass (crypt/encrypt pass)})
         (session/put! :user id)

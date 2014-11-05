@@ -6,7 +6,7 @@
   {:subprotocol "postgresql"
    :subname (env :db-url)
    :user (env :db-user)
-   :password (env :db-password)})
+   :password (env :db-pass)})
 
 (defmacro with-db [f & body]
   `(sql/with-connection db (~f ~@body)))

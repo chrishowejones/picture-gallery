@@ -10,7 +10,8 @@
                  [lib-noir "0.7.6"]
                  [com.taoensso/timbre "2.6.1"]
                  [com.postspectacular/rotor "0.1.0"]
-                 [environ "0.4.0"]]
+                 [environ "0.4.0"]
+                 [http-kit "2.1.12"]]
   :plugins [[lein-ring "0.8.10"]
             [lein-environ "0.4.0"]]
   :ring {:handler picture-gallery.handler/app
@@ -21,17 +22,16 @@
   {:production
    {:ring
     {:open-browser? false, :stacktraces? false, :auto-reload? false}
-    :env
-    {:port 3000,
-     :db-url "//localhost/gallery",
-     :db-user "admin",
-     :db-password "secretProdPassword",
-     :galleries-path "galleries"}}
+    :env {:port 3000,
+          :db-url "//localhost/gallery",
+          :db-user "admin",
+          :db-pass "admin",
+          :galleries-path "galleries"}}
    :dev
    {:dependencies [[ring-mock "0.1.5"] [ring/ring-devel "1.2.1"]]
-    :env
-    {:port 3000,
-     :db-url "//localhost/gallery",
-     :db-user "admin",
-     :db-password "secretProdPassword",
-     :galleries-path "galleries"}}})
+    :env    {:port 3000,
+             :db-url "//localhost/gallery",
+             :db-user "admin",
+             :db-pass "secretProdPassword",
+             :galleries-path "galleries"}}}
+  :main picture-gallery.main)

@@ -6,7 +6,9 @@
             [picture-gallery.views.layout :as layout]
             [picture-gallery.util :refer [thumb-prefix image-uri thumb-uri]]
             [picture-gallery.models.db :as db]
-            [noir.session :as session]))
+            [noir.session :as session]
+            [picture-gallery.util :refer [gallery-path]]
+            [hiccup.element :refer [link-to]]))
 
 (defn thumbnail-link
   "Display a thumbnail as a link to the larger image."
@@ -31,9 +33,9 @@
   "Display a link to the users gallery."
   [{:keys [userid name]}]
   [:div.thumbnail
-   [:a {:href (str "/gallery/" userid)}
-    (image (thumb-uri userid name))
-    userid "'s gallery"]])
+   (link-to (str "gallery/" userid)
+            (image (thumb-uri userid name))
+            userid "'s gallery")])
 
 (defn show-galleries
   "Display the galleries for a user."
