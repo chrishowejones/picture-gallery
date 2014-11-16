@@ -1,7 +1,8 @@
 (ns picture-gallery.models.db
   (:require [clojure.java.jdbc :as sql]
             [environ.core :refer [env]]
-            [clojurewerkz.urly.core :refer [url-like host-of port-of path-of user-info-of]]))
+            [clojurewerkz.urly.core :refer [url-like host-of port-of path-of user-info-of]]
+            [taoensso.timbre :as timbre]))
 
 (defn -database-url []
   (if-let [database_url (env :DATABASE_URL)]
@@ -16,7 +17,10 @@
      :password (env :db-pass)}))
 
 (def db
-  (-database-url))
+  (let [db-map (-database-url)]
+    (do
+      (timbre/info "database = " db-map)
+      db-map)))
 
 (defmacro with-db [f & body]
   `(sql/with-connection db (~f ~@body)))
