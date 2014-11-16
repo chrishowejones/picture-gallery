@@ -1,1 +1,1 @@
-web: lein trampoline run -m picture-gallery.amin/-main
+web: lein trampoline run -m picture-gallery.main/-main
