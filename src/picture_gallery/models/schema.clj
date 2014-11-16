@@ -15,3 +15,9 @@
      :images
      [:userid "varchar(32)"]
      [:name "varchar(100)"])))
+
+(defn -main []
+  (print "Creating database structure...") (flush)
+  (create-users-table)
+  (create-images-table)
+  (println " done"))
