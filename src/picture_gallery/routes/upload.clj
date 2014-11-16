@@ -76,7 +76,7 @@
      "please select a file to upload"
      (try
        ;; upload file and save thumbnail
-       (upload-file (gallery-path) file {:create-path? true})
+       (upload-file (gallery-path) file :create-path? true)
        (save-thumbnail file)
        (db/add-image (session/get :user) filename)
        ;; display thumbnail
