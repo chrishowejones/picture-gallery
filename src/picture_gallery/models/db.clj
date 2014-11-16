@@ -5,25 +5,28 @@
             [taoensso.timbre :as timbre]))
 
 (defn -database-url []
-  (if-let [database_url (env :DATABASE_URL)]
-    (let [url (url-like database_url)]
-             {:subprotocol "postgresql"
-              :subname (str (host-of url) ":" (port-of url) (path-of url))
-              :user (get (clojure.string/split (user-info-of url) #":") 0)
-              :password (get (clojure.string/split (user-info-of url) #":") 1)})
-    {:subprotocol "postgresql"
-     :subname (env :db-url)
-     :user (env :db-user)
-     :password (env :db-pass)}))
+  (let [db-map 
+        (if-let [database_url (env :DATABASE_URL)]
+          (let [url (url-like database_url)]
+            {:subprotocol "postgresql"
+             :subname (str (host-of url) ":" (port-of url) (path-of url))
+             :user (get (clojure.string/split (user-info-of url) #":") 0)
+             :password (get (clojure.string/split (user-info-of url) #":") 1)})
+          {:subprotocol "postgresql"
+           :subname (env :db-url)
+           :user (env :db-user)
+           :password (env :db-pass)})]
+    (timbre/info "database = " db-map)
+    db-map))
 
-(def db
+(comment def db
   (let [db-map (-database-url)]
     (do
       (timbre/info "database = " db-map)
       db-map)))
 
 (defmacro with-db [f & body]
-  `(sql/with-connection db (~f ~@body)))
+  `(sql/with-connection (-database-url) (~f ~@body)))
 
 (defn create-user [user]
   (with-db
