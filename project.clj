@@ -20,6 +20,7 @@
                  [midje "1.6.3"]]
   :plugins [[lein-ring "0.8.10"]
             [lein-environ "0.4.0"]]
+  :min-lein-version "2.0.0"
   :ring {:handler picture-gallery.handler/app
          :init picture-gallery.handler/init
          :destroy picture-gallery.handler/destroy}
