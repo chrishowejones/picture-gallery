@@ -1,12 +1,22 @@
 (ns picture-gallery.models.db
   (:require [clojure.java.jdbc :as sql]
-            [environ.core :refer [env]]))
+            [environ.core :refer [env]]
+            [clojurewerkz.urly.core :refer [url-like host-of port-of path-of user-info-of]]))
+
+(defn -database-url []
+  (if-let [database_url (env :DATABASE_URL)]
+    (let [url (url-like database_url)]
+             {:subprotocol "postgresql"
+              :subname (str (host-of url) ":" (port-of url) (path-of url))
+              :user (get (clojure.string/split (user-info-of url) #":") 0)
+              :password (get (clojure.string/split (user-info-of url) #":") 1)})
+    {:subprotocol "postgresql"
+     :subname (env :db-url)
+     :user (env :db-user)
+     :password (env :db-pass)}))
 
 (def db
-  {:subprotocol "postgresql"
-   :subname (env :db-url)
-   :user (env :db-user)
-   :password (env :db-pass)})
+  (-database-url))
 
 (defmacro with-db [f & body]
   `(sql/with-connection db (~f ~@body)))

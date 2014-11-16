@@ -1,0 +1,4 @@
+(require 'immutant.web :refer :all)
+(require '[immutant.web :refer :all])
+(run app)
+(quit)
