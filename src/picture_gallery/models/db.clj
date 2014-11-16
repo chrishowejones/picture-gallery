@@ -6,12 +6,8 @@
 
 (defn -database-url []
   (let [db-map 
-        (if-let [database_url (System/getProperty "DATABASE_URL")]
-          (let [url (url-like database_url)]
-            {:subprotocol "postgresql"
-             :subname (str (host-of url) ":" (port-of url) (path-of url))
-             :user (get (clojure.string/split (user-info-of url) #":") 0)
-             :password (get (clojure.string/split (user-info-of url) #":") 1)})
+        (if-let [database_url (System/getenv "DATABASE_URL")]
+          database_url
           {:subprotocol "postgresql"
            :subname (env :db-url)
            :user (env :db-user)
