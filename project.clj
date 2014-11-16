@@ -26,15 +26,7 @@
          :destroy picture-gallery.handler/destroy}
   :aot :all
   :profiles
-  {:production
-   {:ring
-    {:open-browser? false, :stacktraces? false, :auto-reload? false}
-    :env {:port 3000,
-             :db-url "//localhost/gallery",
-             :db-user "admin",
-             :db-pass "admin",
-             :galleries-path "galleries"}}
-   :dev
+  {:dev
    {:dependencies [[ring-mock "0.1.5"] [ring/ring-devel "1.2.1"]]
     :env    {:port 3000,
              :db-url "//localhost/gallery",
