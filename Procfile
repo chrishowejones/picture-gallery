@@ -1,1 +1,1 @@
-web: lein trampoline run -m picture-gallery.main/-main
+web: lein with-profile production trampoline ring server
