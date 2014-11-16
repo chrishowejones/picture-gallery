@@ -6,7 +6,7 @@
 
 (defn -database-url []
   (let [db-map 
-        (if-let [database_url (env :DATABASE_URL)]
+        (if-let [database_url (System/getProperty "DATABASE_URL")]
           (let [url (url-like database_url)]
             {:subprotocol "postgresql"
              :subname (str (host-of url) ":" (port-of url) (path-of url))
