@@ -4,7 +4,10 @@
             [noir.session :as session]
             [hiccup.form :refer :all]
             [ring.util.response :refer [content-type response]]
-            [compojure.response :refer [Renderable]]))
+            [compojure.response :refer [Renderable]]
+            [selmer.parser :as parser]))
+
+
 
 (defn utf-8-response
   "Set response header to utf-8 and text/html"

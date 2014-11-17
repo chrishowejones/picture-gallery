@@ -17,7 +17,8 @@
                  [org.immutant/messaging "2.0.0-alpha2"]
                  [org.immutant/scheduling "2.0.0-alpha2"]
                  [clojurewerkz/urly "1.0.0"]
-                 [midje "1.6.3"]]
+                 [midje "1.6.3"]
+                 [selmer "0.5.4"]]
   :plugins [[lein-ring "0.8.10"]
             [lein-environ "0.4.0"]]
   :min-lein-version "2.0.0"
