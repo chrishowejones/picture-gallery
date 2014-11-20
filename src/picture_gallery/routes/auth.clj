@@ -49,18 +49,11 @@
 (defn registration-page
   "Render registration page."
   [& [id]]
-  (layout/base
-   (form-to [:post "/register"]
-            (control :id
-                     (label "user-id" "user id")
-                     (text-field {:tabindex 1} "id" id))
-            (control :pass
-                     (label "pass" "password")
-                     (password-field {:tabindex 2} "pass"))
-            (control :pass1
-                     (label "pass1" "retype password")
-                     (password-field {:tabindex 3} "pass1"))
-            (submit-button {:tabindex 4} "create account"))))
+  (layout/render-template
+   "registration.html"
+   {:id id
+    :id-error (first (vali/get-errors :id))
+    :pass-error (first (vali/get-errors :pass))}))
 
 (defn format-error
   "Format error messages on page."
@@ -108,11 +101,7 @@
 (defn delete-account-page
   "Render delete account page."
   []
-  (layout/common
-   (form-to [:post "/confirm-delete"]
-            (submit-button "delete account"))
-   (form-to [:get "/"]
-            (submit-button "cancel"))))
+  (layout/render-template "deleteAccount.html"))
 
 (defn handle-confirm-delete
   "Handle the confirmation of the deletion of an account."

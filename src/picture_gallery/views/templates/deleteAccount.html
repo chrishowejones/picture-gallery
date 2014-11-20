@@ -1,0 +1,14 @@
+{% extends "picture_gallery/views/templates/base.html" %}
+{% block menu %}
+{% endblock %}
+{% block content %}
+<div class="gallery">
+  <form action="{{context}}/confirm-delete" method="POST">
+    <input type="submit" value="delete account"/>
+  </form>
+  <form action="{{context}}/" method="POST">
+    <input type="submit" value="cancel"/>
+  </form>
+</div>
+{% endblock %}
+
