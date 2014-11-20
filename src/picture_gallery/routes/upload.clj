@@ -61,27 +61,20 @@
      "jpeg"
      (File. (str path thumb-prefix filename)))))
 
-(defn upload-page [info]
-  (layout/common
-   [:h2 "Upload an image"]
-   [:p info]
-   (form-to {:enctype "multipart/form-data"}
-            [:post "/upload"]
-            (file-upload :file)
-            (submit-button "upload"))))
+(defn upload-page [params]
+  (layout/render-template "upload.html" params))
 
 (defn handle-upload [{:keys [filename] :as file}]
   (upload-page
    (if (empty? filename)
-     "please select a file to upload"
+     {:error "please select a file to upload"}
      (try
        ;; upload file and save thumbnail
        (upload-file (gallery-path) file :create-path? true)
        (save-thumbnail file)
        (db/add-image (session/get :user) filename)
        ;; display thumbnail
-       (image {:height "150px"}
-                      (thumb-uri (session/get :user) filename))
+       {:image (thumb-uri (session/get :user) filename)}
        (catch Exception ex
          (str "error uploading file " (.getMessage ex)))))))
 
@@ -89,7 +82,7 @@
   (file-response (str galleries File/separator user-id File/separator file-name)))
 
 (defroutes upload-routes
-  (GET "/upload" [info] (restricted (upload-page info)))
+  (GET "/upload" [info] (restricted (upload-page {:info info})))
   (POST "/upload" [file] (restricted (handle-upload file)))
   (GET "/img/:user-id/:file-name" [user-id file-name] (serve-file user-id file-name))
   (POST "/delete" [names] (restricted (delete-images names))))
