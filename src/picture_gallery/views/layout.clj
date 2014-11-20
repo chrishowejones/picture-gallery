@@ -7,27 +7,24 @@
             [compojure.response :refer [Renderable]]
             [selmer.parser :as parser]))
 
-
+(def template-folder "picture_gallery/views/templates/")
 
 (defn utf-8-response
   "Set response header to utf-8 and text/html"
   [html]
   (content-type (response html) "text/html; charset=utf-8"))
 
-(deftype RenderablePage [content]
+(deftype RenderablePage [template params]
   Renderable
   (render [this request]
-    (utf-8-response
-     (html5
-      [:head
-       [:title "Welcome to picture-gallery"]
-       (include-css "/css/screen.css")
-       [:script {:type "text/javascript"}
-        (str "var context=\"" (:context request) "\";")]
-       (include-js "//code.jquery.com/jquery-2.0.2.min.js"
-                   "/js/albumcolors.js"
-                   "/js/site.js")]
-      [:body content]))))
+    (->> (assoc params
+           :context (:context request)
+           :user (session/get :user))
+         (parser/render-file (str template-folder template))
+         utf-8-response)))
+
+(defn render-template [template & [params]]
+  (RenderablePage. template params))
 
 (defn make-menu
   "Make menu."
@@ -58,7 +55,7 @@
 (defn base
   "Create base page and include content."
   [& content]
-  (RenderablePage. content))
+  (comment RenderablePage. content))
 
 (defn common
   "Create common page elements like logout and login links."

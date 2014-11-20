@@ -8,18 +8,14 @@
   (let [db-map 
         (if-let [database_url (System/getenv "DATABASE_URL")]
           database_url
-          {:subprotocol "postgresql"
-           :subname (env :db-url)
-           :user (env :db-user)
-           :password (env :db-pass)})]
+        {:subprotocol "postgresql"
+         :subname (env :db-url)
+         :user (env :db-user)
+         :password (env :db-pass)
+        })
+  ]
     (timbre/info "database = " db-map)
     db-map))
-
-(comment def db
-  (let [db-map (-database-url)]
-    (do
-      (timbre/info "database = " db-map)
-      db-map)))
 
 (defmacro with-db [f & body]
   `(sql/with-connection (-database-url) (~f ~@body)))
@@ -64,6 +60,7 @@
              as row_number from images)
              as rows where row_number = 1"]
     (doall res)))
+
 
 (defn delete-image
   "Delete an image from the database."
