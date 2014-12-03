@@ -76,7 +76,8 @@
        ;; display thumbnail
        {:image (thumb-uri (session/get :user) filename)}
        (catch Exception ex
-         (str "error uploading file " (.getMessage ex)))))))
+         (error ex "an error has occurred while uploading" filename)
+         {:error (str "error uploading file " (.getMessage ex))})))))
 
 (defn serve-file [user-id file-name]
   (file-response (str galleries File/separator user-id File/separator file-name)))

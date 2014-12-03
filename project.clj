@@ -18,9 +18,14 @@
                  [org.immutant/scheduling "2.0.0-alpha2"]
                  [clojurewerkz/urly "1.0.0"]
                  [midje "1.6.3"]
-                 [selmer "0.5.4"]]
+                 [selmer "0.5.4"]
+                 [lein-cucumber "1.0.2"]
+                 [info.cukes/cucumber-picocontainer "1.2.0"]
+                 [info.cukes/cucumber-junit "1.2.0"]]
   :plugins [[lein-ring "0.8.10"]
-            [lein-environ "0.4.0"]]
+            [lein-environ "0.4.0"]
+            [lein-cucumber "1.0.2"]]
+  :cucumber-feature-paths ["test/features/"]
   :min-lein-version "2.0.0"
   :ring {:handler picture-gallery.handler/app
          :init picture-gallery.handler/init

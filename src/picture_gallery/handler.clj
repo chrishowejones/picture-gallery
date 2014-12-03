@@ -41,8 +41,8 @@
   (route/not-found "Not Found"))
 
 (def app (noir-middleware/app-handler [auth-routes
-                                       home-routes
-                                       upload-routes
-                                       gallery-routes
-                                       app-routes]
-                                      :access-rules [user-page]))
+                                home-routes
+                                upload-routes
+                                gallery-routes
+                                app-routes]
+                               :access-rules [user-page]))
