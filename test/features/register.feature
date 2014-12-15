@@ -26,7 +26,20 @@ Scenario: register new user with valid password and invalid retype password
   And I click on "create account"
   Then I should see an error message "entered passwords do not match"
 
-Scenario: Register with existing user
+@wip
+Scenario: register a new user for Kerodon
+  Given there is no user "Fred" registered          
+  When I navigate to the "register" page
+  And I type:
+  | field    | value     |
+  | id       | Fred      |
+  | pass     | password  |
+  | pass1    | password  |
+  And I click on button "create account"
+  Then the "home" page is displayed
+  And the menu contains "logout Fred"
+
+Scenario: register with existing user
   Given I register a user "Julian"
   And user "Julian" is already registered
   Then I type a password of "werty"

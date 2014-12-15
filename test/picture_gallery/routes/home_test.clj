@@ -11,4 +11,6 @@
         (let [html-body (:body
            (noir-test/with-noir (.render (home) (request :get "/"))))]
           html-body  => (contains "<a href=\"/gallery/testuser\">")
-          html-body  => (contains "<img src=\"/img/testuser/thumb_testimg.jpg\"/>"))))      
+          html-body  => (contains "<img src=\"/img/testuser/thumb_testimg.jpg\"/>"))))
+
+

@@ -1,6 +1,7 @@
 (ns cukes-core
-  (:use [clojure.test])
-  (:use [leiningen.cucumber])
+  (:use [clojure.test]
+        [leiningen.cucumber]
+        [picture-gallery.handler])
   (:import [cucumber.api.cli Main]))
 
 (deftest run-cukes []

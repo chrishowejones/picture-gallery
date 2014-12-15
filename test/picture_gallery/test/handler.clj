@@ -2,7 +2,11 @@
   (:require [noir.util.crypt :refer [encrypt]]
             [picture-gallery.handler :refer :all]
             [ring.mock.request :refer :all]
-            [clojure.test :refer :all]))
+            [clojure.test :refer :all]
+            [kerodon.test :refer :all]
+            [kerodon.core :refer :all]
+            [net.cgrand.enlive-html :as enlive])
+  (:import [java.util HashMap ArrayList]))
 
 (defn mock-get-user [id]
   (if (= id "foo")

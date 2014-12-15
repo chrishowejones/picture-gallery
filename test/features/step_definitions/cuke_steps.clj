@@ -1,16 +1,51 @@
 (use 'picture-gallery.models.db)
 (use 'clojure.test)
-(use 'noir.util.crypt)
-(require '[picture-gallery.handler :as handler])
+(require '[noir.util.crypt :refer [encrypt]])
 (require '[ring.mock.request :refer :all])
+(require '[cucumber.runtime.clj :refer [Given When Then Before]])
+(import 'cucumber.api.Scenario)
+(use 'picture-gallery.handler)
 (require '[noir.session :as session])
 (require '[taoensso.timbre :as timbre])
+(require '[kerodon.core :as kerodon])
+(require '[kerodon.test :as kertest])
+
+
+(defmacro wrap-kerodon-test
+  [test_func]
+  "Wrap the kerodon test in a binding to that returns the test report counters that can be tested for :pass, :fail, etc."
+  `(binding [clojure.test/*report-counters* (ref clojure.test/*initial-report-counters*)]
+    ~test_func
+    @*report-counters*))
+
+(defmacro successful-kerodon-expr? [test_func]
+  `(let [report-counters# (wrap-kerodon-test ~test_func)]
+     (successful? report-counters#)))
 
 (def user (atom {}))
 
 (def request-map (atom {}))
 
 (def session-user (atom ""))
+
+(def session-state (atom nil))
+
+(def message (atom nil))
+
+(def page-map {"home" "/"
+               "register" "/register"})
+(Before []
+        (if @message (reset! message nil)))
+
+(After [scenario]
+       (if-let [message @message]
+         (.write scenario message)))
+
+(defn write [message-text]
+  (reset! message message-text))
+
+(defn write-append [message-text]
+  (swap! message #(str % message-text "\n")))
 
 (Given #"there is no user \"(.*)\" registered" [userid]
        (delete-user userid))
@@ -40,7 +75,6 @@
 
 (Then #"^I should see an error message \"([^\"]*)\"$" [expected-msg]
       (let [error-msg (first (re-seq (re-pattern (str "<div class=\"error\">" expected-msg "</div>")) (:body @request-map)))]
-        
         (assert error-msg (format "Expected %s but not found" expected-msg))))
 
 (Then #"^I click on \"([^\"]*)\"$" [button-label]
@@ -49,7 +83,50 @@
         ;; call app passing a mock request for the stored user map
         (with-redefs [session/put! (fn [key id] (reset! session-user id))]
           (reset! request-map
-                  (handler/app (request :post "/register" @user))))))
+                  (app (request :post "/register" @user))))))
 
+(When #"^I navigate to the \"([^\"]*)\" page$" [page]
+      (let [location (get page-map page)]
+       (reset! session-state
+                (-> (kerodon/session app)
+                    (kerodon/visit location)))
+       (kertest/has @session-state (kertest/status? 200)
+                    (str "supposed to navigate to " page " page"))))
 
-(first (re-seq #"<div class=\"error\">errors message</div>" "<div class=\"error\">error message</div>")) 
+(When #"^I type:$" [table]
+      (doall
+       (for [item (into [] (.asMaps table))]
+         (let [item-map (into {} item)
+               field-selector (keyword (str "#" (item-map "field")))
+               value (item-map "value")]
+           (reset! session-state
+                   (-> @session-state
+                       (kerodon/fill-in field-selector value)))))))
+
+(When #"^I click on button \"([^\"]*)\"$" [button-label]
+      (reset!
+       session-state
+       (->
+        (kerodon/press @session-state button-label)
+        (kerodon/follow-redirect))))
+
+(Then #"^\"([^\"]*)\" displays$" [page]
+      (assert (successful-kerodon-expr? (-> @session-state
+                    (kertest/has (kertest/status? 200))))
+              (str page " has returned ok"))
+      (let [location (get-in @session-state [:response :headers "Location"])]
+        (assert (= location (get page-map page))
+                (str page " not found." @session-state))))
+
+(Then #"^the menu contains \"([^\"]*)\"$" [item]
+      (assert (successful-kerodon-expr?
+               (-> @session-state
+                   (kerodon/within [:.menuitem]
+                                   (kertest/has (kertest/link? item))))) (str "Menu didn't contain " item)))
+
+(Then #"^the \"([^\"]*)\" page is displayed" [page]
+      (let [uri (-> @session-state
+                    (kertest/has (kertest/status? 200))
+                    (get-in [:request :uri]))]
+        (assert (= (get page-map page) uri)
+                (str "got uri " uri))))

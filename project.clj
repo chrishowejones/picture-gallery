@@ -18,9 +18,7 @@
                  [org.immutant/scheduling "2.0.0-alpha2"]
                  [clojurewerkz/urly "1.0.0"]
                  [midje "1.6.3"]
-                 [selmer "0.5.4"]
-                 [lein-cucumber "1.0.2"]
-                 [info.cukes/cucumber-core "1.1.1"]]
+                 [selmer "0.5.4"]]
   :plugins [[lein-ring "0.8.10"]
             [lein-environ "0.4.0"]
             [lein-cucumber "1.0.2"]]
@@ -32,7 +30,11 @@
   :aot :all
   :profiles
   {:dev
-   {:dependencies [[ring-mock "0.1.5"] [ring/ring-devel "1.2.1"]]
+   {:dependencies [[ring-mock "0.1.5"]
+                   [ring/ring-devel "1.2.1"]
+                   [lein-cucumber "1.0.2"]
+                   [info.cukes/cucumber-core "1.1.1"]
+                   [kerodon "0.6.0-SNAPSHOT"]]
     :env    {:port 3000,
              :db-url "//localhost/gallery",
              :db-user "admin",
