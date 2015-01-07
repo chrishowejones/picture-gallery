@@ -2,14 +2,16 @@
 (use 'clojure.test)
 (require '[noir.util.crypt :refer [encrypt]])
 (require '[ring.mock.request :refer :all])
-(require '[cucumber.runtime.clj :refer [Given When Then Before]])
+(require '[cucumber.runtime.clj :refer :all])
 (import 'cucumber.api.Scenario)
 (use 'picture-gallery.handler)
 (require '[noir.session :as session])
 (require '[taoensso.timbre :as timbre])
 (require '[kerodon.core :as kerodon])
 (require '[kerodon.test :as kertest])
-
+(use 'clojure.reflect)
+(import 'cucumber.api.DataTable)
+(require '[clojure.pprint :refer [pprint]])
 
 (defmacro wrap-kerodon-test
   [test_func]
@@ -18,7 +20,9 @@
     ~test_func
     @*report-counters*))
 
-(defmacro successful-kerodon-expr? [test_func]
+(defmacro successful-kerodon-expr?
+  "Return true if the kerodon test function passed as arg runs without reporting a test failure."
+  [test_func]
   `(let [report-counters# (wrap-kerodon-test ~test_func)]
      (successful? report-counters#)))
 
@@ -34,12 +38,13 @@
 
 (def page-map {"home" "/"
                "register" "/register"})
+
 (Before []
         (if @message (reset! message nil)))
 
-(After [scenario]
+(After []
        (if-let [message @message]
-         (.write scenario message)))
+         (pprint (str "*****" message "*****"))))
 
 (defn write [message-text]
   (reset! message message-text))
@@ -87,15 +92,15 @@
 
 (When #"^I navigate to the \"([^\"]*)\" page$" [page]
       (let [location (get page-map page)]
-       (reset! session-state
+        (reset! session-state
                 (-> (kerodon/session app)
                     (kerodon/visit location)))
-       (kertest/has @session-state (kertest/status? 200)
-                    (str "supposed to navigate to " page " page"))))
+        (kertest/has @session-state (kertest/status? 200)
+                     (str "supposed to navigate to " page " page"))))
 
 (When #"^I type:$" [table]
       (doall
-       (for [item (into [] (.asMaps table))]
+       (for [item (into [] (.asMaps table String String))]
          (let [item-map (into {} item)
                field-selector (keyword (str "#" (item-map "field")))
                value (item-map "value")]
@@ -112,7 +117,7 @@
 
 (Then #"^\"([^\"]*)\" displays$" [page]
       (assert (successful-kerodon-expr? (-> @session-state
-                    (kertest/has (kertest/status? 200))))
+                                            (kertest/has (kertest/status? 200))))
               (str page " has returned ok"))
       (let [location (get-in @session-state [:response :headers "Location"])]
         (assert (= location (get page-map page))
