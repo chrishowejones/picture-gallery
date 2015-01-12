@@ -17,16 +17,15 @@
                  [org.immutant/messaging "2.0.0-alpha2"]
                  [org.immutant/scheduling "2.0.0-alpha2"]
                  [clojurewerkz/urly "1.0.0"]
-                 [midje "1.6.3"]
                  [selmer "0.5.4"]
                  [org.clojure/tools.reader "0.7.10"]
                  [org.clojure/clojurescript "0.0-1806"]
-                 [domina "1.0.0"]
-                 (cljs-ajax "0.2.0")]
+                 [domina "1.0.2"]
+                 (cljs-ajax "0.2.2")]
   :plugins [[lein-ring "0.8.10"]
             [lein-environ "0.4.0"]
             [lein-cucumber "1.0.2"]
-            [lein-cljsbuild "0.3.2"]]
+            [lein-cljsbuild "0.3.4"]]
   :cucumber-feature-paths ["test/features/"]
   :min-lein-version "2.0.0"
   :ring {:handler picture-gallery.handler/app
@@ -45,7 +44,9 @@
                    [ring/ring-devel "1.2.1"]
                    [lein-cucumber "1.0.2"]
                    [info.cukes/cucumber-core "1.1.1"]
-                   [kerodon "0.6.0-SNAPSHOT"]]
+                   [midje "1.6.3"]
+                   [kerodon "0.6.0-SNAPSHOT"]
+                   [metrics-clojure "2.3.0"]]
     :env    {:port 3000,
              :db-url "//localhost/gallery",
              :db-user "admin",
