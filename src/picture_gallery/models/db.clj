@@ -16,8 +16,10 @@
     (timbre/info db-map)
     db-map))
 
+(defonce db (-database-url))
+
 (defmacro with-db [f & body]
-  `(sql/with-connection (-database-url) (~f ~@body)))
+  `(sql/with-connection ~db (~f ~@body)))
 
 (defn create-user [user]
   (with-db

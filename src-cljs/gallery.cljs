@@ -6,7 +6,17 @@
             [ajax.core :refer [POST]]))
 
 (defn handle-response [response]
-  (js/alert (str response)))
+  (let [errors (goog.string.StringBuffer. "")]
+    (doseq [{:keys [name status]} response]
+      (if (= "ok" status)
+        (-> (by-id name)
+            (.-parentNode)
+            (.-parentNode)
+            (dom/removeNode))
+        (.append errors (str "<li>failed to remove " name ": " status "</li>"))))
+
+    (when-let [error-str (not-empty (.toString errors))]
+      (append! (by-id "error") (str "<ul>" error-str "</ul>")))))
 
 (defn find-selected []
   (->> (sel "input:checked")

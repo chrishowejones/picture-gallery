@@ -11,17 +11,11 @@
                  [com.taoensso/timbre "2.6.1"]
                  [com.postspectacular/rotor "0.1.0"]
                  [environ "0.4.0"]
-                 [http-kit "2.1.12"]
-                 [org.immutant/web "2.0.0-alpha2"]
-                 [org.immutant/caching "2.0.0-alpha2"]
-                 [org.immutant/messaging "2.0.0-alpha2"]
-                 [org.immutant/scheduling "2.0.0-alpha2"]
-                 [clojurewerkz/urly "1.0.0"]
                  [selmer "0.5.4"]
                  [org.clojure/tools.reader "0.7.10"]
                  [org.clojure/clojurescript "0.0-1806"]
                  [domina "1.0.2"]
-                 (cljs-ajax "0.2.2")]
+                 [cljs-ajax "0.2.2"]]
   :plugins [[lein-ring "0.8.10"]
             [lein-environ "0.4.0"]
             [lein-cucumber "1.0.2"]
@@ -37,19 +31,20 @@
      :compiler
      {:pretty-print false
       :output-to "resources/public/js/gallery-cljs.js"}}]}
-  :aot :all
   :profiles
-  {:dev
+  {:uberjar {:aot :all}
+   :production
+   {:ring
+    {:open-browser? false, :stacktrace? false, :auto-reload? false}}
+   :dev
    {:dependencies [[ring-mock "0.1.5"]
                    [ring/ring-devel "1.2.1"]
                    [lein-cucumber "1.0.2"]
                    [info.cukes/cucumber-core "1.1.1"]
                    [midje "1.6.3"]
-                   [kerodon "0.6.0-SNAPSHOT"]
-                   [metrics-clojure "2.3.0"]]
+                   [kerodon "0.6.0-SNAPSHOT"]]
     :env    {:port 3000,
              :db-url "//localhost/gallery",
              :db-user "admin",
              :db-pass "secretProdPassword",
-             :galleries-path "galleries"}}}
-  :main picture-gallery.main)
+             :galleries-path "galleries"}}})
