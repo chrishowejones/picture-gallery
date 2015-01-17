@@ -28,3 +28,15 @@
       (is
        (-> (request :post "/login" {:id "bar" :pass "12345"})
            app :headers (get "Set-Cookie") empty?)))))
+
+
+(deftest test-delete-images
+  (testing "delete images success"
+    (with-redefs [noir.session/get (fn [_] "user")
+                  picture-gallery.routes.upload/delete-image (fn [_ _] "ok")]
+      (is
+       (= (str '({:name "image.jpg" :status "ok"} {:name "image2.jpg" :status "ok"}))
+        (-> (request :post "/delete" "{:names (\"image.jpg\" \"image2.jpg\")}")
+            (content-type "application/edn")
+            app
+            :body))))))

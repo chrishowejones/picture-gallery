@@ -1,11 +1,10 @@
 (ns picture-gallery.models.db
   (:require [clojure.java.jdbc :as sql]
             [environ.core :refer [env]]
-            [clojurewerkz.urly.core :refer [url-like host-of port-of path-of user-info-of]]
             [taoensso.timbre :as timbre]))
 
 (defn -database-url []
-  (let [db-map 
+  (let [db-map
         (if-let [database_url (System/getenv "DATABASE_URL")]
           database_url
         {:subprotocol "postgresql"
@@ -14,7 +13,7 @@
          :password (env :db-pass)
         })
   ]
-    (timbre/info "database = " db-map)
+    (timbre/info db-map)
     db-map))
 
 (defmacro with-db [f & body]
@@ -55,7 +54,7 @@
   (with-db
     sql/with-query-results
     res
-    ["select * from 
+    ["select * from
         (select *, row_number() over (partition by userid)
              as row_number from images)
              as rows where row_number = 1"]

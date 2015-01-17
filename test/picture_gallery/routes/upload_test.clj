@@ -11,5 +11,5 @@
         (with-redefs [delete-image (fn [userid name] "ok")
                       session/get (fn [_] userid)
                       ]
-          (:body (delete-images [{:name name}])) => (contains (str "[{\"name\":{\"name\":\"filename.jpg\"},\"status\":\"ok\"}]"))
-          (:headers (delete-images [{:name name}])) => {"Content-Type" "application/json; charset=utf-8"})))
+          (:body (delete-images [{:name name}])) => (contains (str "{:name {:name \"filename.jpg\"}, :status \"ok\"}"))
+          (:headers (delete-images [{:name name}])) => {"Content-Type" "application/edn; charset=utf-8"})))

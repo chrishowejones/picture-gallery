@@ -8,7 +8,8 @@
             [noir.session :as session]
             [picture-gallery.routes.gallery :refer [gallery-routes]]
             [taoensso.timbre :as timbre]
-            [com.postspectacular.rotor :as rotor]))
+            [com.postspectacular.rotor :as rotor]
+            [ring.middleware.format :refer [wrap-restful-format]]))
 
 (defn user-page [_]
   (session/get :user))
@@ -26,7 +27,7 @@
                        :enabled? true
                        :async? false
                        :max-message-per-msecs nil
-                       :fn rotor/append})  
+                       :fn rotor/append})
   (timbre/set-config! [:shared-appender-config :error]
                       {:path "error.log" :max-size (* 512 1024) :backlog 10})
   (timbre/set-config! [:shared-appender-config :rotor]
@@ -40,9 +41,11 @@
   (route/resources "/")
   (route/not-found "Not Found"))
 
-(def app (noir-middleware/app-handler [auth-routes
-                                home-routes
-                                upload-routes
-                                gallery-routes
-                                app-routes]
-                               :access-rules [user-page]))
+(def app (noir-middleware/app-handler
+          [auth-routes
+           home-routes
+           upload-routes
+           gallery-routes
+           app-routes]
+          :middleware [wrap-restful-format]
+          :access-rules [user-page]))
