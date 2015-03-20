@@ -19,9 +19,12 @@ You will need [Leiningen][1] 1.7.0 or above installed. Also need to install [Pos
 
 You need to start the postgres database and create a schema called gallery with a user of admin and password of admin. Then open a REPL (e.g. lein repl) and type:
 
+    $lein repl
+    
     user> (use 'picture-gallery.models.schema)
     user> (create-users-table)
     user> (create-images-table)
+    user> (quit)
 
 These commands will create the necessary tables in the postgresql database. Once you have done this you can run the application.
 
