@@ -100,7 +100,7 @@
 
 (When #"^I type:$" [table]
       (doall
-       (for [item (into [] (.asMaps table String String))]
+       (for [item (into [] (.asMaps table))]
          (let [item-map (into {} item)
                field-selector (keyword (str "#" (item-map "field")))
                value (item-map "value")]
