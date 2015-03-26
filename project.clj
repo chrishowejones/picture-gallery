@@ -15,12 +15,16 @@
                  [org.clojure/tools.reader "0.7.10"]
                  [org.clojure/clojurescript "0.0-1806"]
                  [domina "1.0.2"]
-                 [cljs-ajax "0.2.2"]]
+                 [cljs-ajax "0.2.2"]
+                 [ragtime/ragtime.sql.files "0.3.7"]]
   :plugins [[lein-ring "0.8.10"]
             [lein-environ "0.4.0"]
             [lein-cucumber "1.0.2"]
-            [lein-cljsbuild "0.3.4"]]
+            [lein-cljsbuild "0.3.4"]
+            [lein-midje "3.0.0"]
+            [ragtime/ragtime.lein "0.3.7"]]
   :cucumber-feature-paths ["test/features/"]
+
   :min-lein-version "2.0.0"
   :ring {:handler picture-gallery.handler/app
          :init picture-gallery.handler/init
@@ -42,9 +46,15 @@
                    [lein-cucumber "1.0.2"]
                    [info.cukes/cucumber-core "1.1.1"]
                    [midje "1.6.3"]
-                   [kerodon "0.6.0-SNAPSHOT"]]
+                   [kerodon "0.6.0-SNAPSHOT"]
+                   ;; TODO - figure out why adding clj-webdriver causes tests to fail to compile/run
+                   ;; [org.apache.httpcomponents/httpclient "4.3.6"]
+                   ;; [clj-webdriver "0.6.1"]
+                   ]
     :env    {:port 3000,
              :db-url "//localhost/gallery",
              :db-user "admin",
              :db-pass "secretProdPassword",
-             :galleries-path "galleries"}}})
+             :galleries-path "galleries"}}
+   :ragtime {:migrations ragtime.sql.files/migrations
+             :database "jdbc:postgresql://localhost/gallery?user=admin"}})
