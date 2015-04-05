@@ -18,3 +18,4 @@ pom.xml
 galleries/
 *.jpg
 *.log
+*.db

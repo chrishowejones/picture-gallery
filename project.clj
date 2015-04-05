@@ -5,9 +5,8 @@
                  [compojure "1.1.6"]
                  [hiccup "1.0.5"]
                  [ring-server "0.3.1"]
-                 [postgresql/postgresql "9.1-901.jdbc4"]
+                 [org.postgresql/postgresql "9.2-1002-jdbc4"]
                  [com.h2database/h2 "1.4.186"]
-                 [org.clojure/java.jdbc "0.2.3"]
                  [lib-noir "0.7.6"]
                  [com.taoensso/timbre "2.6.1"]
                  [com.postspectacular/rotor "0.1.0"]
@@ -18,7 +17,12 @@
                  [domina "1.0.2"]
                  [cljs-ajax "0.2.2"]
                  [http-kit "2.1.16"]
-                 [ragtime/ragtime.sql.files "0.3.7"]]
+                 [korma "0.4.0"]
+                 [log4j "1.2.15"
+                  :exclusions [javax.mail/mail
+                               javax.jms/jms
+                               com.sun.jdmk/jmxtools
+                               com.sun.jmx/jmxri]]]
   :plugins [[lein-ring "0.8.10"]
             [lein-environ "0.4.0"]
             [lein-cucumber "1.0.2"]
@@ -58,8 +62,9 @@
                    ;; [clj-webdriver "0.6.1"]
                    ]
     :env    {:port 3000,
-             :db-subprotocol "postgresql"
-             :db-url "//localhost/gallery",
-             :db-user "admin",
+             :db-driver-classname "org.h2.Driver",
+             :db-subprotocol "h2",
+             :db-url "~/gallery",
+             :db-user "sa",
              :db-pass "",
              :galleries-path "galleries"}}})
