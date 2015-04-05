@@ -6,6 +6,7 @@
                  [hiccup "1.0.5"]
                  [ring-server "0.3.1"]
                  [postgresql/postgresql "9.1-901.jdbc4"]
+                 [com.h2database/h2 "1.4.186"]
                  [org.clojure/java.jdbc "0.2.3"]
                  [lib-noir "0.7.6"]
                  [com.taoensso/timbre "2.6.1"]
@@ -16,6 +17,7 @@
                  [org.clojure/clojurescript "0.0-1806"]
                  [domina "1.0.2"]
                  [cljs-ajax "0.2.2"]
+                 [http-kit "2.1.16"]
                  [ragtime/ragtime.sql.files "0.3.7"]]
   :plugins [[lein-ring "0.8.10"]
             [lein-environ "0.4.0"]
@@ -24,17 +26,21 @@
             [lein-midje "3.0.0"]
             [ragtime/ragtime.lein "0.3.7"]]
   :cucumber-feature-paths ["test/features/"]
-
   :min-lein-version "2.0.0"
   :ring {:handler picture-gallery.handler/app
          :init picture-gallery.handler/init
          :destroy picture-gallery.handler/destroy}
   :cljsbuild
   {:builds
-   [{:source-paths ["src-cljs"]
-     :compiler
-     {:pretty-print false
-      :output-to "resources/public/js/gallery-cljs.js"}}]}
+   {:dev {:source-paths ["src-cljs"]
+          :compiler
+          {:pretty-print false
+           :output-to "resources/public/js/gallery-cljs.js"}}
+    :prod {:source-paths ["src-cljs"]
+           :compiler
+           {:optimizations :advanced
+            :externs ["resources/externs.js"]
+            :output-to "resources/public/js/gallery-cljs.js"}}}}
   :profiles
   {:uberjar {:aot :all}
    :production
@@ -52,9 +58,8 @@
                    ;; [clj-webdriver "0.6.1"]
                    ]
     :env    {:port 3000,
+             :db-subprotocol "postgresql"
              :db-url "//localhost/gallery",
              :db-user "admin",
-             :db-pass "secretProdPassword",
-             :galleries-path "galleries"}}
-   :ragtime {:migrations ragtime.sql.files/migrations
-             :database "jdbc:postgresql://localhost/gallery?user=admin"}})
+             :db-pass "",
+             :galleries-path "galleries"}}})

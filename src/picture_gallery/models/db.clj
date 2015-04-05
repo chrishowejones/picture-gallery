@@ -7,12 +7,14 @@
   (let [db-map
         (if-let [database_url (System/getenv "DATABASE_URL")]
           database_url
-        {:subprotocol "postgresql"
-         :subname (env :db-url)
-         :user (env :db-user)
-         :password (env :db-pass)
-        })
-  ]
+          (let [subprotocol (env :db-subprotocol)]
+            {:classname   "org.h2.Driver"
+             :subprotocol subprotocol
+             :subname (env :db-url)
+             :user (env :db-user)
+             :password (env :db-pass)
+             }))
+        ]
     (timbre/info db-map)
     db-map))
 

@@ -52,6 +52,12 @@
 (defn write-append [message-text]
   (swap! message #(str % message-text "\n")))
 
+(defn register-user
+  ([userid] (register-user userid "password"))
+  ([userid pass]
+   (if-not (get-user userid)
+     (create-user {:id userid :pass (encrypt pass)}))))
+
 (Given #"there is no user \"(.*)\" registered" [userid]
        (delete-user userid))
 
@@ -135,3 +141,7 @@
                     (get-in [:request :uri]))]
         (assert (= (get page-map page) uri)
                 (str "got uri " uri))))
+
+(Given #"^user \"([^\"]*)\" is already registered with a password of \"([^\"]*)\"$" [userid password]
+  (if-not (get-user userid)
+     (create-user {:id userid :pass (encrypt password)})))

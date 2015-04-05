@@ -10,7 +10,5 @@
                          :db-user "admin",
                          :db-pass "admin",
                          :galleries-path "galleries"}]
-        ((-database-url) :subprotocol) => "postgresql"
-        ((-database-url) :subname) => "//localhost/gallery"
-        ((-database-url) :user) => "admin"
-        ((-database-url) :password) => "admin"))
+        (-database-url)  => {:subprotocol "postgresql" :subname "//localhost/gallery"
+                             :user "admin" :password "admin"}))
