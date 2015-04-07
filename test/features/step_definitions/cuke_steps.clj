@@ -144,4 +144,4 @@
 
 (Given #"^user \"([^\"]*)\" is already registered with a password of \"([^\"]*)\"$" [userid password]
   (if-not (get-user userid)
-     (create-user {:id userid :pass (encrypt password)})))
+    (create-user {:id userid :pass (encrypt password)})))

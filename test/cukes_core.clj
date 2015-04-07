@@ -4,5 +4,5 @@
         [picture-gallery.handler])
   (:import [cucumber.api.cli Main]))
 
-(deftest run-cukes []
+(comment deftest run-cukes []
   (. Main (main (into-array ["--format" "pretty" "--glue" "test" "test/features"]))))

@@ -9,23 +9,14 @@
   (let [db-map
         (if-let [database_url (System/getenv "DATABASE_URL")]
           database_url
-          (let [protocol (env :db-subprotocol)
-                db-spec
-                {:classname (env :db-driver-classname)
-                 :subprotocol protocol
-                 :subname (env :db-url)
-                 :user (env :db-user)
-                 :password (env :db-pass)}]
-            (if (= "h2" protocol)
-              (conj db-spec {:database_to_upper false})
-              db-spec)))
+          {:connection-uri (env :db-uri)})
         ]
     (timbre/info db-map)
     db-map))
 
 (defonce db (-database-url))
 
-(defdb korma-db db)
+(defdb korma-db4 db)
 
 (defentity users)
 
@@ -57,9 +48,9 @@
   "Get first image for users"
   []
   (exec-raw
-
-   ["select userid, (select name from images i2 where i2.userid=i1.userid limit 1) name
- from images i1 group by userid" []]
+   ["select i1.userid, i1.name
+       from images i1
+       where name = (select name from images i2 where i2.userid=i1.userid limit 1)" []]
    :results))
 
 

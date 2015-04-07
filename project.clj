@@ -18,6 +18,8 @@
                  [cljs-ajax "0.2.2"]
                  [http-kit "2.1.16"]
                  [korma "0.4.0"]
+                 [joplin.core "0.2.10"]
+                 [joplin.jdbc "0.2.10"]
                  [log4j "1.2.15"
                   :exclusions [javax.mail/mail
                                javax.jms/jms
@@ -28,7 +30,8 @@
             [lein-cucumber "1.0.2"]
             [lein-cljsbuild "0.3.4"]
             [lein-midje "3.0.0"]
-            [ragtime/ragtime.lein "0.3.7"]]
+            [joplin.lein "0.2.10"]]
+  :source-paths ["src" "joplin"]
   :cucumber-feature-paths ["test/features/"]
   :min-lein-version "2.0.0"
   :ring {:handler picture-gallery.handler/app
@@ -45,6 +48,12 @@
            {:optimizations :advanced
             :externs ["resources/externs.js"]
             :output-to "resources/public/js/gallery-cljs.js"}}}}
+  :joplin {
+         :migrators {:sql-mig "joplin/migrators/sql"}  ;; A path for a folder with migration files
+         :databases {:sql-dev {:type :jdbc, :url "jdbc:h2:mem:gallery?user=sa&password=;database_to_upper=false"}
+                     :sql-prod {:type :jdbc, :url "jdbc:postgresql://localhost/gallery?user=admin&password="}}
+         :environments {:dev [{:db :sql-dev :migrator :sql-mig}]
+                 :prod [{:db :sql-prod :migrator :sql-mig}]}}
   :profiles
   {:uberjar {:aot :all}
    :production
@@ -62,9 +71,8 @@
                    ;; [clj-webdriver "0.6.1"]
                    ]
     :env    {:port 3000,
-             :db-driver-classname "org.h2.Driver",
-             :db-subprotocol "h2",
-             :db-url "~/gallery",
-             :db-user "sa",
-             :db-pass "",
-             :galleries-path "galleries"}}})
+             :db-uri "jdbc:h2:mem:gallery?user=sa&password=;database_to_upper=false"
+             :galleries-path "galleries"}}}
+  :aliases
+  {"migrate-test" ["do" ["joplin" "migrate" "dev"] ["test"]]}
+  )

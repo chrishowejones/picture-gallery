@@ -16,6 +16,16 @@
      [:userid "varchar(32)"]
      [:name "varchar(100)"])))
 
+(defn drop-users-table []
+  (sql/db-do-commands (-database-url)
+                      (sql/drop-table-ddl
+                       :users)))
+
+(defn drop-images-table []
+  (sql/db-do-commands (-database-url)
+                      (sql/drop-table-ddl
+                       :images)))
+
 (defn -main []
   (print "Creating database structure...") (flush)
   (create-users-table)

@@ -31,6 +31,8 @@
              [:pass "password must be at least 5 characters"])
   (vali/rule (= pass pass1)
              [:pass "entered passwords do not match"])
+  (vali/rule (nil? (db/get-user id))
+             [:id (str "The user with id " id " already exists!")])
   (not (vali/errors? :id :pass :pass1)))
 
 (defn error-item
@@ -58,19 +60,16 @@
 (defn format-error
   "Format error messages on page."
   [id ex]
-  (cond
-   (and (instance? org.postgresql.util.PSQLException ex)
-        (= 0 (.getErrorCode ex)))
-   (str "The user with id " id " already exists!")
-   :else
-   (str  "An error has occurred while processing the request. Error is " (.getMessage ex))))
+  (do
+    (timbre/error ex)
+    (str  "An error has occurred while processing the request. Error is " ex)))
 
 (defn handle-registration
   "Register user."
   [id pass pass1]
   (if (valid? id pass pass1)
     (do
-     (timbre/info (str "Registering " id)) 
+     (timbre/info (str "Registering " id))
      (try
         (db/create-user {:id id :pass (crypt/encrypt pass)})
         (session/put! :user id)
@@ -87,7 +86,7 @@
   (let [user (db/get-user id)]
     (and user (crypt/compare pass (user :pass))
          (do
-           (timbre/info (str "Logged on as " id)) 
+           (timbre/info (str "Logged on as " id))
            (session/put! :user id))))
   (resp/redirect "/"))
 

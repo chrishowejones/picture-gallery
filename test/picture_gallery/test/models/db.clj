@@ -6,9 +6,6 @@
 
 
 (fact "db use env to populate itself if DATABASE_URL not set."
-      (with-redefs [env {:db-url "//localhost/gallery",
-                         :db-user "admin",
-                         :db-pass "admin",
+      (with-redefs [env {:db-uri "jdbc:postgresql//localhost/gallery?user=admin&password=admin",
                          :galleries-path "galleries"}]
-        (-database-url)  => {:subprotocol "postgresql" :subname "//localhost/gallery"
-                             :user "admin" :password "admin"}))
+        (-database-url)  => {:connection-uri "jdbc:postgresql//localhost/gallery?user=admin&password=admin"}))
