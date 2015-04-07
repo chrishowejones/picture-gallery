@@ -50,7 +50,7 @@
             :output-to "resources/public/js/gallery-cljs.js"}}}}
   :joplin {
          :migrators {:sql-mig "joplin/migrators/sql"}  ;; A path for a folder with migration files
-         :databases {:sql-dev {:type :jdbc, :url "jdbc:h2:mem:gallery?user=sa&password=;database_to_upper=false"}
+         :databases {:sql-dev {:type :jdbc, :url "jdbc:h2:./gallery?user=sa&password=;database_to_upper=false"}
                      :sql-prod {:type :jdbc, :url "jdbc:postgresql://localhost/gallery?user=admin&password="}}
          :environments {:dev [{:db :sql-dev :migrator :sql-mig}]
                  :prod [{:db :sql-prod :migrator :sql-mig}]}}
@@ -71,7 +71,7 @@
                    ;; [clj-webdriver "0.6.1"]
                    ]
     :env    {:port 3000,
-             :db-uri "jdbc:h2:mem:gallery?user=sa&password=;database_to_upper=false"
+             :db-uri "jdbc:h2:./gallery?user=sa&password=;database_to_upper=false"
              :galleries-path "galleries"}}}
   :aliases
   {"migrate-test" ["do" ["joplin" "migrate" "dev"] ["test"]]}

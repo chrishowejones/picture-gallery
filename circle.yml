@@ -1,0 +1,24 @@
+## Customize the test machine
+machine:
+
+  # Override /etc/hosts
+  hosts:
+    circlehost: 127.0.0.1
+    dev.mycompany.com: 127.0.0.1
+
+  # Add some environment variables
+  environment:
+    CIRCLE_ENV: test
+    DATABASE_URL: postgres://ubuntu:@127.0.0.1:5432/circle_test
+
+## Customize database setup
+#database:
+#  override:
+    # replace CircleCI's generated database.yml
+#    - cp config/database.yml.ci config/database.yml
+#    - bundle exec rake db:create db:schema:load
+
+## Customize test commands
+test:
+  override:
+    - lein migrate-test
