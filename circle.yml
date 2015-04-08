@@ -15,6 +15,7 @@ machine:
 database:
   override:
     # replace CircleCI's generated database.yml
+    - psql -c "CREATE USER admin"
     - psql -c "CREATE DATABASE gallery"
 
 ## Customize test commands
