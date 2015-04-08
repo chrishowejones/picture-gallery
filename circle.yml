@@ -11,13 +11,6 @@ machine:
     CIRCLE_ENV: test
     DATABASE_URL: postgres://ubuntu:@127.0.0.1:5432/circle_test
 
-## Customize database setup
-database:
-  override:
-    # replace CircleCI's generated database.yml
-    - psql -c "CREATE USER admin"
-    - psql -c "CREATE DATABASE gallery"
-
 ## Customize test commands
 test:
   override:
