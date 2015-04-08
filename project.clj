@@ -51,7 +51,7 @@
   :joplin {
          :migrators {:sql-mig "joplin/migrators/sql"}  ;; A path for a folder with migration files
          :databases {:sql-dev {:type :jdbc, :url "jdbc:h2:./gallery?user=sa&password=;database_to_upper=false"}
-                     :sql-test {:type :jdbc, :url "jdbc:postgresql://localhost/gallery?user=admin"}
+                     :sql-test {:type :jdbc, :url "jdbc:postgresql://127.0.0.1/circle_test?user=ubuntu"}
                      :sql-prod {:type :jdbc, :url "jdbc:postgresql://localhost/gallery?user=admin"}}
            :environments {:dev [{:db :sql-dev :migrator :sql-mig}]
                           :test [{:db :sql-test :migrator :sql-mig}]
