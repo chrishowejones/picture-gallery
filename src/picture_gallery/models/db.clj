@@ -7,7 +7,7 @@
 
 (defn -database-url []
   (let [db-map
-        (if-let [database_url (System/getenv "DATABASE_URL")]
+        (if-let [database_url (env :DATABASE_URL)]
           database_url
           {:connection-uri (env :db-uri)})
         ]
