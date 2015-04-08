@@ -51,9 +51,11 @@
   :joplin {
          :migrators {:sql-mig "joplin/migrators/sql"}  ;; A path for a folder with migration files
          :databases {:sql-dev {:type :jdbc, :url "jdbc:h2:./gallery?user=sa&password=;database_to_upper=false"}
-                     :sql-prod {:type :jdbc, :url "jdbc:postgresql://localhost/gallery?user=admin&password="}}
-         :environments {:dev [{:db :sql-dev :migrator :sql-mig}]
-                 :prod [{:db :sql-prod :migrator :sql-mig}]}}
+                     :sql-test {:type :jdbc, :url "jdbc:postgresql://localhost/gallery?user=admin"}
+                     :sql-prod {:type :jdbc, :url "jdbc:postgresql://localhost/gallery?user=admin"}}
+           :environments {:dev [{:db :sql-dev :migrator :sql-mig}]
+                          :test [{:db :sql-test :migrator :sql-mig}]
+                          :prod [{:db :sql-prod :migrator :sql-mig}]}}
   :profiles
   {:uberjar {:aot :all}
    :production
@@ -74,5 +76,5 @@
              :db-uri "jdbc:h2:./gallery?user=sa&password=;database_to_upper=false"
              :galleries-path "galleries"}}}
   :aliases
-  {"migrate-test" ["do" ["joplin" "migrate" "dev"] ["test"]]}
+  {"migrate-test" ["do" ["joplin" "migrate" "test"] ["test"]]}
   )

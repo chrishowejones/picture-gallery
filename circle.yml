@@ -13,10 +13,9 @@ machine:
 
 ## Customize database setup
 #database:
-#  override:
+  override:
     # replace CircleCI's generated database.yml
-#    - cp config/database.yml.ci config/database.yml
-#    - bundle exec rake db:create db:schema:load
+    - psql -c "CREATE DATABASE gallery"
 
 ## Customize test commands
 test:
