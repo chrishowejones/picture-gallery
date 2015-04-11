@@ -37,6 +37,7 @@
   :ring {:handler picture-gallery.handler/app
          :init picture-gallery.handler/init
          :destroy picture-gallery.handler/destroy}
+  :main picture-gallery.main
   :cljsbuild
   {:builds
    {:dev {:source-paths ["src-cljs"]
@@ -49,10 +50,10 @@
             :externs ["resources/externs.js"]
             :output-to "resources/public/js/gallery-cljs.js"}}}}
   :joplin {
-         :migrators {:sql-mig "joplin/migrators/sql"}  ;; A path for a folder with migration files
-         :databases {:sql-dev {:type :jdbc, :url "jdbc:h2:./gallery?user=sa&password=;database_to_upper=false"}
-                     :sql-test {:type :jdbc, :url "jdbc:postgresql://127.0.0.1/circle_test?user=ubuntu"}
-                     :sql-prod {:type :jdbc, :url "jdbc:postgresql://localhost/gallery?user=admin"}}
+           :migrators {:sql-mig "joplin/migrators/sql"}  ;; A path for a folder with migration files
+           :databases {:sql-dev {:type :jdbc, :url "jdbc:h2:./gallery?user=sa&password=;database_to_upper=false"}
+                       :sql-test {:type :jdbc, :url "jdbc:postgresql://127.0.0.1/circle_test?user=ubuntu"}
+                       :sql-prod {:type :jdbc, :url "jdbc:postgresql://localhost/gallery?user=admin"}}
            :environments {:dev [{:db :sql-dev :migrator :sql-mig}]
                           :test [{:db :sql-test :migrator :sql-mig}]
                           :prod [{:db :sql-prod :migrator :sql-mig}]}}
@@ -69,12 +70,15 @@
                    [midje "1.6.3"]
                    [kerodon "0.6.0-SNAPSHOT"]
                    ;; TODO - figure out why adding clj-webdriver causes tests to fail to compile/run
-                   ;; [org.apache.httpcomponents/httpclient "4.3.6"]
-                   ;; [clj-webdriver "0.6.1"]
+                   [org.apache.httpcomponents/httpclient "4.3.6"]
+                   [clj-webdriver "0.6.1":exclusions [org.clojure/core.cache]]
                    ]
     :env    {:port 3000,
+             :host "localhost"
              :db-uri "jdbc:h2:./gallery?user=sa&password=;database_to_upper=false"
              :galleries-path "galleries"}}}
   :aliases
-  {"migrate-test" ["do" ["joplin" "migrate" "test"] ["test"]]}
-  )
+  {
+   "migrate-dev" ["do" ["joplin" "migrate" "dev"] ["midje"]]
+   "migrate-test" ["do" ["joplin" "migrate" "test"] ["midje"]]
+   })

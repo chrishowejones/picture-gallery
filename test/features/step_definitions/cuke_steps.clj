@@ -1,5 +1,5 @@
-(use 'picture-gallery.models.db)
-(use 'clojure.test)
+(require '[picture-gallery.models.db :refer :all])
+(require '[clojure.test :refer :all])
 (require '[noir.util.crypt :refer [encrypt]])
 (require '[ring.mock.request :refer :all])
 (require '[cucumber.runtime.clj :refer :all])
@@ -9,16 +9,18 @@
 (require '[taoensso.timbre :as timbre])
 (require '[kerodon.core :as kerodon])
 (require '[kerodon.test :as kertest])
-(use 'clojure.reflect)
+(require '[clojure.reflect :refer :all])
 (import 'cucumber.api.DataTable)
 (require '[clojure.pprint :refer [pprint]])
+(require '[clj-webdriver.taxi :refer :all])
+(require '[environ.core :refer :all])
 
 (defmacro wrap-kerodon-test
   [test_func]
   "Wrap the kerodon test in a binding to that returns the test report counters that can be tested for :pass, :fail, etc."
   `(binding [clojure.test/*report-counters* (ref clojure.test/*initial-report-counters*)]
-    ~test_func
-    @*report-counters*))
+     ~test_func
+     @*report-counters*))
 
 (defmacro successful-kerodon-expr?
   "Return true if the kerodon test function passed as arg runs without reporting a test failure."
@@ -36,15 +38,30 @@
 
 (def message (atom nil))
 
+(def base-url (str
+               "http://"
+               (env :host)
+               ":"
+               (env :port)))
+
 (def page-map {"home" "/"
                "register" "/register"})
 
+(def home-page (str base-url (get page-map "home")))
+
+(def browser {:browser :htmlunit})
+
+(def driver (new-driver browser))
+
 (Before []
-        (if @message (reset! message nil)))
+        (if @message (reset! message nil))
+        (set-driver! browser))
 
 (After []
        (if-let [message @message]
-         (pprint (str "*****" message "*****"))))
+         (pprint (str "*****" message "*****")))
+       (close)
+       (quit))
 
 (defn write [message-text]
   (reset! message message-text))
@@ -143,5 +160,28 @@
                 (str "got uri " uri))))
 
 (Given #"^user \"([^\"]*)\" is already registered with a password of \"([^\"]*)\"$" [userid password]
-  (if-not (get-user userid)
-    (create-user {:id userid :pass (encrypt password)})))
+       (if-not (get-user userid)
+         (create-user {:id userid :pass (encrypt password)})))
+
+(Given #"^I visit the home page$" []
+       (to home-page))
+
+(When #"^I type user name \"([^\"]*)\"$" [username]
+      (input-text "#id" username))
+
+(When #"^I type a password \"([^\"]*)\"$" [password]
+      (input-text "#pass" password))
+
+(When #"^I Click-on \"([^\"]*)\"$" [id]
+      (let  [xpath {:xpath (str "//input[@type='submit' and @value='" id "']")}]
+        (click (find-element xpath))))
+
+(Then #"^I cannot login$" []
+      (assert (exists? "#id")))
+
+(Then #"^I see the home page in the browser$" []
+      (assert (= home-page (current-url))))
+
+(Then #"^the menu in browser contains \"([^\"]*)\"$" [menu-item]
+      (let [xpath {:xpath (str "//div[@class='menuitem']/a[text()='" menu-item "']")}]
+        (exists? xpath)))
