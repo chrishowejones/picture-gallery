@@ -16,4 +16,4 @@ test:
   override:
     - lein migrate-test
   post:
-    - lein uberjar
+    - lein with-profile production uberjar
