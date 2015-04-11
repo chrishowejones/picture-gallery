@@ -15,3 +15,5 @@ machine:
 test:
   override:
     - lein migrate-test
+  post:
+    - lein uberjar
