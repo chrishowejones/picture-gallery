@@ -21,9 +21,9 @@
 
 (defn scale [img ratio width height]
   (let [scale        (AffineTransform/getScaleInstance
-                       (double ratio) (double ratio))
+                      (double ratio) (double ratio))
         transform-op (AffineTransformOp.
-                       scale AffineTransformOp/TYPE_BILINEAR)]
+                      scale AffineTransformOp/TYPE_BILINEAR)]
     (.filter transform-op img (BufferedImage. width height (.getType img)))))
 
 (defn scale-image [file]
@@ -36,43 +36,44 @@
 (defn save-thumbnail [{:keys [filename]}]
   (let [path (str (gallery-path) File/separator)]
     (ImageIO/write
-      (scale-image (io/input-stream (str path filename)))
-      "jpeg"
-      (File. (str path thumb-prefix filename)))))
+     (scale-image (io/input-stream (str path filename)))
+     "jpeg"
+     (File. (str path thumb-prefix filename)))))
 
 (defn upload-page [params]
   (layout/render-template "upload.html" params))
 
 (defn handle-upload [{:keys [filename] :as file}]
   (upload-page
-    (if (empty? filename)
-      {:error "please select a file to upload"}
-      (try
-        (upload-file (gallery-path) file :create-path? true)
-        (save-thumbnail file)
-        (db/add-image (session/get :user) filename)
-        {:image (thumb-uri (session/get :user) filename)}
-        (catch Exception ex
-          (error ex "an error has occured while uploading" name)
-          {:error (str "error uploading file " (.getMessage ex))})))))
+   (if (empty? filename)
+     {:error "please select a file to upload"}
+     (try
+       (upload-file (gallery-path) file :create-path? true)
+       (save-thumbnail file)
+       (db/add-image (session/get :user) filename)
+       {:image (thumb-uri (session/get :user) filename)}
+       (catch Exception ex
+         (error ex "an error has occured while uploading" name)
+         {:error (str "error uploading file " (.getMessage ex))})))))
 
-(defn delete-image [userid name]
+(defn delete-image [userid imgname]
   (try
-    (db/delete-image userid name)
-    (io/delete-file (str (gallery-path) File/separator name))
-    (io/delete-file (str (gallery-path) File/separator thumb-prefix name))
+    (db/delete-image userid imgname)
+    (io/delete-file (str (gallery-path) File/separator imgname))
+    (io/delete-file (str (gallery-path) File/separator thumb-prefix imgname))
     "ok"
     (catch Exception ex
-      (error ex "an error has occured while deleting" name)
+      (error ex "an error has occured while deleting" imgname)
       (.getMessage ex))))
 
 (defn delete-images [names]
   (let [userid (session/get :user)]
     (resp/edn
-      (for [name names] {:name name :status (delete-image userid name)}))))
+     (for [name names] {:name name :status (delete-image userid name)}))))
 
 (defn serve-file [user-id file-name]
-  (file-response (str galleries File/separator user-id File/separator file-name)))
+  (file-response
+   (str galleries File/separator user-id File/separator file-name)))
 
 (defroutes upload-routes
   (GET "/img/:user-id/:file-name" [user-id file-name]

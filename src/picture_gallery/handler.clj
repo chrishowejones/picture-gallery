@@ -11,10 +11,14 @@
             [com.postspectacular.rotor :as rotor]
             [ring.middleware.format :refer [wrap-restful-format]]))
 
-(defn user-page [_]
+(defn user-page
+  "Get user from session to use as access rule."
+  [_]
   (session/get :user))
 
-(defn init []
+(defn init
+  "Initialise app"
+  []
   (timbre/set-config! [:timestamp-pattern] "yyyy-MM-dd HH:mm:ss")
   (timbre/set-config! [:appenders :error]
                       {:min-level :error
@@ -31,13 +35,18 @@
   (timbre/set-config! [:shared-appender-config :error]
                       {:path "error.log" :max-size (* 512 1024) :backlog 10})
   (timbre/set-config! [:shared-appender-config :rotor]
-                      {:path "picture-gallery.log" :max-size (* 512 1024) :backlog 10})
+                      {:path "picture-gallery.log"
+                       :max-size (* 512 1024)
+                       :backlog 10})
   (timbre/info "picture-gallery is starting"))
 
-(defn destroy []
+(defn destroy
+  "Tear down for app."
+  []
   (timbre/info "picture-gallery is shutting down"))
 
 (defroutes app-routes
+  "Define app routes in handler."
   (route/resources "/")
   (route/not-found "Not Found"))
 

@@ -13,7 +13,9 @@
             (.-parentNode)
             (.-parentNode)
             (dom/removeNode))
-        (.append errors (str "<li>failed to remove " name ": " status "</li>"))))
+        (.append
+         errors
+         (str "<li>failed to remove " name ": " status "</li>"))))
 
     (when-let [error-str (not-empty (.toString errors))]
       (append! (by-id "error") (str "<ul>" error-str "</ul>")))))

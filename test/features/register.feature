@@ -26,7 +26,6 @@ Scenario: register new user with valid password and invalid retype password
   And I click on "create account"
   Then I should see an error message "entered passwords do not match"
 
-@wip
 Scenario: register a new user for Kerodon
   Given there is no user "Fred" registered
   When I navigate to the "register" page

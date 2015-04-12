@@ -30,7 +30,8 @@
             [lein-cucumber "1.0.2"]
             [lein-cljsbuild "0.3.4"]
             [lein-midje "3.0.0"]
-            [joplin.lein "0.2.10"]]
+            [joplin.lein "0.2.10"]
+            [lein-cloverage "1.0.2"]]
   :source-paths ["src" "joplin"]
   :cucumber-feature-paths ["test/features/"]
   :min-lein-version "2.0.0"
@@ -80,6 +81,6 @@
             :galleries-path "galleries"}}}
   :aliases
   {
-   "migrate-dev" ["do" ["joplin" "migrate" "dev"] ["midje"]]
-   "migrate-test" ["do" ["joplin" "migrate" "test"] ["midje"]]
+   "migrate-dev" ["do" ["joplin" "migrate" "dev"] ["cloverage"] ["cucumber" "--format" "pretty"]]
+   "migrate-test" ["do" ["joplin" "migrate" "test"] ["cloverage"] ["cucumber" "--format" "pretty"]]
    })

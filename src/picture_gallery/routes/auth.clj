@@ -15,7 +15,8 @@
   (:import java.io.File))
 
 (defn create-gallery-path
-  "Create path to gallery directory for user. Create directory if it's not present."
+  "Create path to gallery directory for user.
+   Create directory if it's not present."
   []
   (let [user-path (File. (gallery-path))]
     (if-not (.exists user-path)
@@ -23,7 +24,8 @@
     (str (.getAbsolutePath user-path) File/separator)))
 
 (defn valid?
-  "Check if user and password are valid. Store error messages if not returns true if valid."
+  "Check if user and password are valid.
+   Store error messages if not returns true if valid."
   [id pass pass1]
   (vali/rule (vali/has-value? id)
              [:id "user id is required"])

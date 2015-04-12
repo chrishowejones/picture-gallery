@@ -30,12 +30,12 @@
                  (where {:id id})
                  (limit 1))))
 
-(defn add-image [userid name]
+(defn add-image [userid imgname]
   (transaction
    (if (empty? (select images
-                       (where {:userid userid :name name})
+                       (where {:userid userid :name imgname})
                        (limit 1)))
-     (insert images (values {:userid userid :name name}))
+     (insert images (values {:userid userid :name imgname}))
      (throw
       (Exception. "you have already uploaded an image with the same name")))))
 
@@ -50,14 +50,16 @@
   (exec-raw
    ["select i1.userid, i1.name
        from images i1
-       where name = (select name from images i2 where i2.userid=i1.userid limit 1)" []]
+       where name =
+       (select name from images i2 where i2.userid=i1.userid limit 1)"
+    []]
    :results))
 
 
 (defn delete-image
   "Delete an image from the database."
-  [userid name]
-  (delete images (where {:userid userid :name name})))
+  [userid imgname]
+  (delete images (where {:userid userid :name imgname})))
 
 (defn delete-user
   "Delete user from the database."

@@ -1,7 +1,7 @@
 (ns picture-gallery.repl
-  (:use picture-gallery.handler
-        ring.server.standalone
-        [ring.middleware file-info file]))
+  (:use [picture-gallery.handler :only [app init destroy]]
+        [ring.server.standalone :only [serve]]
+        [ring.middleware content-type not-modified file]))
 
 (defonce server (atom nil))
 
@@ -14,7 +14,8 @@
     ; Makes static assets in $PROJECT_DIR/resources/public/ available.
     (wrap-file "resources")
     ; Content-Type, Content-Length, and Last Modified headers for files in body
-    (wrap-file-info)))
+    (wrap-content-type)
+    (wrap-not-modified)))
 
 (defn start-server
   "used for starting the server in development mode from REPL"
@@ -32,5 +33,3 @@
 (defn stop-server []
   (.stop @server)
   (reset! server nil))
-
-

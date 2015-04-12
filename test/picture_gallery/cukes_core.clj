@@ -1,4 +1,4 @@
-(ns cukes-core
+(ns picture-gallery.cukes-core
   (:use [clojure.test]
         [leiningen.cucumber]
         [picture-gallery.handler])
@@ -6,7 +6,7 @@
             [environ.core :refer [env]])
   (:import [cucumber.api.cli Main]))
 
-(use-fixtures
+(comment use-fixtures
   :once
   (fn [f]
     (let [server (run-server
@@ -17,5 +17,8 @@
         (finally
           (server :timeout 100))))))
 
-(deftest run-cukes []
-  (. Main (main (into-array ["--format" "pretty" "--glue" "test" "test/features"]))))
+(comment
+  deftest run-cukes
+  (testing "dummy test to invoke cucumber."
+    (. Main (main (into-array
+                   ["--format" "pretty" "--glue" "test" "test/features"])))))

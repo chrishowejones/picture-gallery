@@ -3,7 +3,8 @@
             [domina.css :refer [sel]]))
 
 (defn rgb-string
-  "returns a string representing the rgb call to set red, green and blue values passed."
+  "returns a string representing the rgb call to set red,
+    green and blue values passed."
   [[r g b]]
   (str "rgb(" r ", " g ", " b ")"))
 
@@ -14,7 +15,8 @@
   (set! (.-backgroundColor style) (rgb-string background)))
 
 (defn img-url
-  "Takes a div containing an img tag and retrieves the src attribute in the img tag."
+  "Takes a div containing an img tag and retrieves
+   the src attribute in the img tag."
   [div]
   (-> div (sel "img") (attr "src")))
 

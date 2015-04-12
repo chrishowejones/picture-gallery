@@ -14,16 +14,24 @@
 (require '[clojure.pprint :refer [pprint]])
 (require '[clj-webdriver.taxi :refer :all])
 (require '[environ.core :refer :all])
+(require '[org.httpkit.server :refer [run-server]])
+
+(def server (run-server
+                    #'app
+                    {:port (env :port) :join? false}))
 
 (defmacro wrap-kerodon-test
   [test_func]
-  "Wrap the kerodon test in a binding to that returns the test report counters that can be tested for :pass, :fail, etc."
-  `(binding [clojure.test/*report-counters* (ref clojure.test/*initial-report-counters*)]
+  "Wrap the kerodon test in a binding to that returns the test report
+    counters that can be tested for :pass, :fail, etc."
+  `(binding [clojure.test/*report-counters*
+             (ref clojure.test/*initial-report-counters*)]
      ~test_func
      @*report-counters*))
 
 (defmacro successful-kerodon-expr?
-  "Return true if the kerodon test function passed as arg runs without reporting a test failure."
+  "Return true if the kerodon test function passed as arg
+  runs without reporting a test failure."
   [test_func]
   `(let [report-counters# (wrap-kerodon-test ~test_func)]
      (successful? report-counters#)))
@@ -95,14 +103,24 @@
       ;; check redirect to /
       (let [location (get-in @request-map [:headers "Location"])
             status (@request-map :status)]
-        (assert (= 302 status) (format "Expected status 302 actual %s" status))
-        (assert (= "/" location) (format "Expected location / found location %s" location))))
+        (assert
+         (= 302 status)
+         (format "Expected status 302 actual %s" status))
+        (assert
+         (= "/" location)
+         (format "Expected location / found location %s" location))))
 
 (Then #"^the session contains user \"([^\"]*)\"$" [userid]
-      (assert (= userid @session-user) (format "Expected user %s found %s" userid @session-user)))
+      (assert
+       (= userid @session-user)
+       (format "Expected user %s found %s" userid @session-user)))
 
 (Then #"^I should see an error message \"([^\"]*)\"$" [expected-msg]
-      (let [error-msg (first (re-seq (re-pattern (str "<div class=\"error\">" expected-msg "</div>")) (:body @request-map)))]
+      (let [error-msg (first
+                       (re-seq
+                        (re-pattern
+                         (str "<div class=\"error\">" expected-msg "</div>"))
+                        (:body @request-map)))]
         (assert error-msg (format "Expected %s but not found" expected-msg))))
 
 (Then #"^I click on \"([^\"]*)\"$" [button-label]
@@ -150,7 +168,8 @@
       (assert (successful-kerodon-expr?
                (-> @session-state
                    (kerodon/within [:.menuitem]
-                                   (kertest/has (kertest/link? item))))) (str "Menu didn't contain " item)))
+                                   (kertest/has (kertest/link? item)))))
+              (str "Menu didn't contain " item)))
 
 (Then #"^the \"([^\"]*)\" page is displayed" [page]
       (let [uri (-> @session-state
@@ -159,9 +178,11 @@
         (assert (= (get page-map page) uri)
                 (str "got uri " uri))))
 
-(Given #"^user \"([^\"]*)\" is already registered with a password of \"([^\"]*)\"$" [userid password]
-       (if-not (get-user userid)
-         (create-user {:id userid :pass (encrypt password)})))
+(Given
+ #"^user \"([^\"]*)\" is already registered with a password of \"([^\"]*)\"$"
+ [userid password]
+ (if-not (get-user userid)
+   (create-user {:id userid :pass (encrypt password)})))
 
 (Given #"^I visit the home page$" []
        (to home-page))
@@ -183,5 +204,6 @@
       (assert (= home-page (current-url))))
 
 (Then #"^the menu in browser contains \"([^\"]*)\"$" [menu-item]
-      (let [xpath {:xpath (str "//div[@class='menuitem']/a[text()='" menu-item "']")}]
+      (let [xpath
+            {:xpath (str "//div[@class='menuitem']/a[text()='" menu-item "']")}]
         (exists? xpath)))

@@ -1,5 +1,5 @@
 (ns picture-gallery.main
-  (:use picture-gallery.handler
+  (:use [picture-gallery.handler :only [app]]
         [org.httpkit.server :only [run-server]]
         [ring.middleware file-info file])
   (:gen-class))
