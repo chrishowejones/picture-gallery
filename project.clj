@@ -82,5 +82,5 @@
   :aliases
   {
    "migrate-dev" ["do" ["joplin" "migrate" "dev"] ["cloverage"] ["cucumber" "--format" "pretty"]]
-   "migrate-test" ["do" ["joplin" "migrate" "test"] ["cloverage"] "cucumber" "--format" "json:$CIRCLE_TEST_REPORTS/cucumber/tests.cucumber"]
+   "migrate-test" ["do" ["joplin" "migrate" "test"] ["cloverage"] ["cucumber" "--format" "json:$CIRCLE_TEST_REPORTS/cucumber/tests.cucumber"]]
    })
