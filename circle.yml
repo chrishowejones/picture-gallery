@@ -15,6 +15,8 @@ machine:
 test:
   override:
     - lein migrate-test
+    - lein cloverage -o $CIRCLE_TEST_REPORTS/cloverage
+    - lein cucumber --format json:$CIRCLE_TEST_REPORTS/cucumber/tests.cucumber
   post:
     - lein with-profile production uberjar
 
