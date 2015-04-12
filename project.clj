@@ -61,7 +61,8 @@
   {:uberjar {:aot :all}
    :production
    {:ring
-    {:open-browser? false, :stacktrace? false, :auto-reload? false}}
+    {:open-browser? false, :stacktrace? false, :auto-reload? false}
+    :env {:galleries-path "galleries"}}
    :dev
    {:dependencies [[ring-mock "0.1.5"]
                    [ring/ring-devel "1.2.1"]
@@ -76,7 +77,7 @@
     :env    {:port 3000,
              :host "localhost"
              :db-uri "jdbc:h2:./gallery?user=sa&password=;database_to_upper=false"
-             :galleries-path "galleries"}}}
+            :galleries-path "galleries"}}}
   :aliases
   {
    "migrate-dev" ["do" ["joplin" "migrate" "dev"] ["midje"]]
