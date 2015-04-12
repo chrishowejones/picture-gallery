@@ -17,3 +17,10 @@ test:
     - lein migrate-test
   post:
     - lein with-profile production uberjar
+
+## Deploy to Heroku
+deployment:
+  staging:
+    branch: master
+    heroku:
+      appname: nameless-lake-6474
