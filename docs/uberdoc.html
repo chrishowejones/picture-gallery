@@ -2909,8 +2909,10 @@ net.brehaut.ClojureTools = (function (SH) {
   (timbre/info &quot;picture-gallery is shutting down&quot;))</pre></td></tr><tr><td class="docs"><p>Define app routes in handler.</p>
 </td><td class="codes"><pre class="brush: clojure">(defroutes app-routes
   (route/resources &quot;/&quot;)
-  (route/not-found &quot;Not Found&quot;))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">(def app (noir-middleware/app-handler
+  (route/not-found &quot;Not Found&quot;))</pre></td></tr><tr><td class="docs"><p>Defines the start point of the web application.</p>
+</td><td class="codes"><pre class="brush: clojure">(def
+  app
+  (noir-middleware/app-handler
           [auth-routes
            home-routes
            upload-routes
@@ -2922,18 +2924,21 @@ net.brehaut.ClojureTools = (function (SH) {
   (:use [picture-gallery.handler :only [app]]
         [org.httpkit.server :only [run-server]]
         [ring.middleware file-info file])
-  (:gen-class))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">(defn -main [&amp; [port]]
+  (:gen-class))</pre></td></tr><tr><td class="docs"><p>Main function invoked when the application is run from command line.</p>
+</td><td class="codes"><pre class="brush: clojure">(defn -main
+  [&amp; [port]]
   (let [port (if port (Integer/parseInt port) 3000)]
     (run-server app {:port port})
-    (println (format &quot;You can view the site on //localhost:%s&quot; port))))</pre></td></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#picture-gallery.models.db" name="picture-gallery.models.db"><h1 class="project-name">picture-gallery.models.db</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs">
+    (println (format &quot;You can view the site on //localhost:%s&quot; port))))</pre></td></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#picture-gallery.models.db" name="picture-gallery.models.db"><h1 class="project-name">picture-gallery.models.db</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs"><p>Collection of functions that persist users and their images to a database.</p>
 </td><td class="codes"><pre class="brush: clojure">(ns picture-gallery.models.db
   (:require [clojure.java.jdbc :as sql]
             [environ.core :refer [env]]
             [taoensso.timbre :as timbre]
             [korma.db :refer :all]
-            [korma.core :refer :all]))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">(defn -database-url []
+            [korma.core :refer :all]))</pre></td></tr><tr><td class="docs"><p>Define database url from DATABASE_URL environment variable or
+   from db-uri in project file.</p>
+</td><td class="codes"><pre class="brush: clojure">(defn -database-url
+  []
   (let [db-map
         (if-let [database_url (env :database-url)]
           database_url
@@ -2941,13 +2946,14 @@ net.brehaut.ClojureTools = (function (SH) {
         ]
     (timbre/info db-map)
     db-map))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">(defonce db (-database-url))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">(defdb korma-db4 db)</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defdb korma-db (-database-url))</pre></td></tr><tr><td class="docs">
 </td><td class="codes"><pre class="brush: clojure">(defentity users)</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">(defentity images)</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">(defn create-user [user]
-  (insert users (values user)))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">(defn get-user [id]
+</td><td class="codes"><pre class="brush: clojure">(defentity images)</pre></td></tr><tr><td class="docs"><p>Create user in database. User is a map containing :id :pass keys.</p>
+</td><td class="codes"><pre class="brush: clojure">(defn create-user
+  [user]
+  (insert users (values user)))</pre></td></tr><tr><td class="docs"><p>Get a user from the database if it's :id matches the function argument.</p>
+</td><td class="codes"><pre class="brush: clojure">(defn get-user
+  [id]
   (first (select users
                  (where {:id id})
                  (limit 1))))</pre></td></tr><tr><td class="docs">
@@ -2961,7 +2967,7 @@ net.brehaut.ClojureTools = (function (SH) {
       (Exception. &quot;you have already uploaded an image with the same name&quot;)))))</pre></td></tr><tr><td class="docs"><p>Fetch all the images uploaded by a user.</p>
 </td><td class="codes"><pre class="brush: clojure">(defn images-by-user
   [userid]
-  (select images (where {:userid userid})))</pre></td></tr><tr><td class="docs"><p>Get first image for users</p>
+  (select images (where {:userid userid})))</pre></td></tr><tr><td class="docs"><p>Get a sequence of the first images for all users</p>
 </td><td class="codes"><pre class="brush: clojure">(defn get-gallery-previews
   []
   (exec-raw
@@ -2970,19 +2976,20 @@ net.brehaut.ClojureTools = (function (SH) {
        where name =
        (select name from images i2 where i2.userid=i1.userid limit 1)&quot;
     []]
-   :results))</pre></td></tr><tr><td class="docs"><p>Delete an image from the database.</p>
+   :results))</pre></td></tr><tr><td class="docs"><p>Delete an image from the database if its :userid and :name matches the supplied argument.</p>
 </td><td class="codes"><pre class="brush: clojure">(defn delete-image
   [userid imgname]
-  (delete images (where {:userid userid :name imgname})))</pre></td></tr><tr><td class="docs"><p>Delete user from the database.</p>
+  (delete images (where {:userid userid :name imgname})))</pre></td></tr><tr><td class="docs"><p>Delete user from the database, if its :id matches the supplied argument.</p>
 </td><td class="codes"><pre class="brush: clojure">(defn delete-user
   [userid]
-  (delete users (where {:id userid})))</pre></td></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#picture-gallery.repl" name="picture-gallery.repl"><h1 class="project-name">picture-gallery.repl</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs">
+  (delete users (where {:id userid})))</pre></td></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#picture-gallery.repl" name="picture-gallery.repl"><h1 class="project-name">picture-gallery.repl</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs"><p>Functions used to manage app from REPL.</p>
 </td><td class="codes"><pre class="brush: clojure">(ns picture-gallery.repl
   (:use [picture-gallery.handler :only [app init destroy]]
         [ring.server.standalone :only [serve]]
         [ring.middleware content-type not-modified file]))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">(defonce server (atom nil))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">(defn get-handler []
+</td><td class="codes"><pre class="brush: clojure">(defonce server (atom nil))</pre></td></tr><tr><td class="docs"><p>Get the root ring handler for the application.</p>
+</td><td class="codes"><pre class="brush: clojure">(defn get-handler
+  []
   ;; #'app expands to (var app) so that when we reload our code,
   ;; the server is forced to re-resolve the symbol in the var
   ;; rather than having its own copy. When the root binding
@@ -3005,6 +3012,7 @@ net.brehaut.ClojureTools = (function (SH) {
                     :join true}))
     (println (str &quot;You can view the site at http://localhost:&quot; port))))</pre></td></tr><tr><td class="docs">
 </td><td class="codes"><pre class="brush: clojure">(defn stop-server []
+  &quot;Stops the server in development mode from REPL&quot;
   (.stop @server)
   (reset! server nil))</pre></td></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#picture-gallery.routes.auth" name="picture-gallery.routes.auth"><h1 class="project-name">picture-gallery.routes.auth</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs">
 </td><td class="codes"><pre class="brush: clojure">(ns picture-gallery.routes.auth
@@ -3217,23 +3225,30 @@ net.brehaut.ClojureTools = (function (SH) {
        (serve-file user-id file-name))
   (GET &quot;/upload&quot; [info] (restricted (upload-page {:info info})))
   (POST &quot;/upload&quot; [file] (restricted (handle-upload file)))
-  (POST &quot;/delete&quot; [names] (restricted (delete-images names))))</pre></td></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#picture-gallery.util" name="picture-gallery.util"><h1 class="project-name">picture-gallery.util</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs">
+  (POST &quot;/delete&quot; [names] (restricted (delete-images names))))</pre></td></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#picture-gallery.util" name="picture-gallery.util"><h1 class="project-name">picture-gallery.util</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs"><p>Utilities for picture gallery app.</p>
 </td><td class="codes"><pre class="brush: clojure">(ns picture-gallery.util
   (:require [noir.session :as session]
             [hiccup.util :refer [url-encode]]
             [environ.core :refer [env]]
             [clojure.string :as str])
-  (:import java.io.File))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">(def galleries (env :galleries-path))</pre></td></tr><tr><td class="docs"><p>Construct path to gallery for the currently logged in user.</p>
+  (:import java.io.File))</pre></td></tr><tr><td class="docs"><p>Get gallery path from environment variable GALLERIES_PATH</p>
+</td><td class="codes"><pre class="brush: clojure">(def galleries 
+  (env :galleries-path))</pre></td></tr><tr><td class="docs"><p>Define default thumbnail picture size.</p>
+</td><td class="codes"><pre class="brush: clojure">(def thumb-size  150)</pre></td></tr><tr><td class="docs"><p>Define prefix used on generated thumbnails images.</p>
+</td><td class="codes"><pre class="brush: clojure">(def thumb-prefix 
+  &quot;thumb_&quot;)</pre></td></tr><tr><td class="docs"><p>Construct path to gallery for the currently logged in user.</p>
 </td><td class="codes"><pre class="brush: clojure">(defn gallery-path
   []
-  (str galleries File/separator (session/get :user)))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">(def thumb-size 150)</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">(def thumb-prefix &quot;thumb_&quot;)</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">(defn image-uri [userid file-name]
-  (str &quot;/img/&quot; userid &quot;/&quot; (str/replace (url-encode file-name) #&quot;\+&quot; &quot;%20&quot;)))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">(defn thumb-uri [userid file-name]
-  (image-uri userid (str thumb-prefix file-name)))</pre></td></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#picture-gallery.views.layout" name="picture-gallery.views.layout"><h1 class="project-name">picture-gallery.views.layout</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs">
+  (str galleries File/separator (session/get :user)))</pre></td></tr><tr><td class="docs"><p>Deal with encoding of spaces, etc. in filename</p>
+</td><td class="codes"><pre class="brush: clojure">(defn- encode-filename
+  [file-name]
+  (str/replace (url-encode file-name) #&quot;\+&quot; &quot;%20&quot;))</pre></td></tr><tr><td class="docs"><p>Construct uri for image file.</p>
+</td><td class="codes"><pre class="brush: clojure">(defn image-uri
+  [userid file-name]
+  (str &quot;/img/&quot; userid &quot;/&quot; (encode-filename file-name)))</pre></td></tr><tr><td class="docs"><p>Construct uri for thumbnail image.</p>
+</td><td class="codes"><pre class="brush: clojure">(defn thumb-uri
+  [userid file-name]
+  (image-uri userid (str thumb-prefix (encode-filename file-name))))</pre></td></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#picture-gallery.views.layout" name="picture-gallery.views.layout"><h1 class="project-name">picture-gallery.views.layout</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs">
 </td><td class="codes"><pre class="brush: clojure">(ns picture-gallery.views.layout
   (:require [noir.session :as session]
             [ring.util.response :refer [content-type response]]
