@@ -34,6 +34,8 @@
             [lein-cloverage "1.0.2"]]
   :source-paths ["src" "joplin"]
   :cucumber-feature-paths ["test/features/"]
+  :codox {:src-dir-uri "http://github.com/chrishowejones/picture-gallery/tree/master/"
+          :src-linenum-anchor-prefix "L"}
   :min-lein-version "2.0.0"
   :ring {:handler picture-gallery.handler/app
          :init picture-gallery.handler/init
@@ -71,14 +73,13 @@
                    [info.cukes/cucumber-core "1.1.1"]
                    [midje "1.6.3"]
                    [kerodon "0.6.0-SNAPSHOT"]
-                   ;; TODO - figure out why adding clj-webdriver causes tests to fail to compile/run
                    [org.apache.httpcomponents/httpclient "4.3.6"]
                    [clj-webdriver "0.6.1":exclusions [org.clojure/core.cache]]
                    ]
     :env    {:port 3000,
              :host "localhost"
              :db-uri "jdbc:h2:./gallery?user=sa&password=;database_to_upper=false"
-            :galleries-path "galleries"}}}
+             :galleries-path "galleries"}}}
   :aliases
   {
    "migrate-dev" ["do" ["joplin" "migrate" "dev"] ["cloverage"] ["cucumber" "--format" "pretty"]]

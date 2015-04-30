@@ -50,7 +50,10 @@
   (route/resources "/")
   (route/not-found "Not Found"))
 
-(def app (noir-middleware/app-handler
+(def
+  app
+  "Defines the start point of the web application."
+  (noir-middleware/app-handler
           [auth-routes
            home-routes
            upload-routes

@@ -1,11 +1,14 @@
 (ns picture-gallery.repl
+  "Functions used to manage app from REPL."
   (:use [picture-gallery.handler :only [app init destroy]]
         [ring.server.standalone :only [serve]]
         [ring.middleware content-type not-modified file]))
 
 (defonce server (atom nil))
 
-(defn get-handler []
+(defn get-handler
+  "Get the root ring handler for the application."
+  []
   ;; #'app expands to (var app) so that when we reload our code,
   ;; the server is forced to re-resolve the symbol in the var
   ;; rather than having its own copy. When the root binding
@@ -31,5 +34,6 @@
     (println (str "You can view the site at http://localhost:" port))))
 
 (defn stop-server []
+  "Stops the server in development mode from REPL"
   (.stop @server)
   (reset! server nil))
