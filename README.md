@@ -10,6 +10,10 @@ Picture gallery application to provide the following workflows:
 *       Account Deletion - remove account and all associated pictures and thumbnails.
 
 
+## Build Status
+
+[![Circle CI](https://circleci.com/gh/chrishowejones/picture-gallery/tree/master.svg?style=svg)](https://circleci.com/gh/chrishowejones/picture-gallery/tree/master)
+
 ## Prerequisites
 
 You will need [Leiningen][1] 1.7.0 or above installed. Also need to install [Postgresql][2].
